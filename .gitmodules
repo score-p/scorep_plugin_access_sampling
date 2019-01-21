@@ -1,0 +1,6 @@
+[submodule "scorep_plugin_cxx_wrapper"]
+	path = scorep
+	url = https://github.com/score-p/scorep_plugin_cxx_wrapper
+[submodule "scorep_plugin_common"]
+	path = common
+	url = https://github.com/score-p/scorep_plugin_common
