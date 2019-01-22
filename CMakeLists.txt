@@ -8,7 +8,7 @@ include(scorep_plugin_common/DefaultBuildType.cmake)
 
 add_subdirectory(scorep_plugin_cxx_wrapper)
 
-add_library(access_sampling STATIC src/access_sampling.cpp)
+add_library(access_sampling SHARED src/access_sampling.cpp)
 
 target_compile_options(access_sampling INTERFACE -Wall -pedantic -Wextra)
 
