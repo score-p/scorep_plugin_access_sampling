@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 #include <string>
 
 extern "C"
@@ -17,30 +18,16 @@ using PerfEventAttribute = struct perf_event_attr;
 class PfmWrapper
 {
     public:
-    PfmWrapper ()
-    {
-        pfm_initialize ();
-    }
+    PfmWrapper ();
 
-    bool metric_is_supported (const std::string &metric_name)
-    {
-        int ret = -1;
-        try
-        {
-            std::string event = supported_events_.at (metric_name);
-            ret = pfm_find_event (event.c_str ());
-        }
-        catch (const std::out_of_range &e)
-        {
-            return false;
-        }
-        return ret != -1;
-    }
+    bool metric_is_supported (const std::string &metric_name);
 
+    void get_perf_event (const std::string &metric_name, uint64_t sample_period, PerfEventAttribute *perf_attr);
 
     private:
     std::map<std::string, std::string> supported_events_ = {
         { "Load", "MEM_UOPS_RETIRED.ALL_LOADS" },
         { "Store", "MEM_UOPS_RETIRED.ALL_STORES" }
     };
+    static bool is_initialized_;
 };

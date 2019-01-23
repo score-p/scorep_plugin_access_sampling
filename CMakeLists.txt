@@ -10,7 +10,7 @@ add_subdirectory(scorep_plugin_cxx_wrapper)
 
 add_subdirectory(test)
 
-add_library(access_sampling SHARED src/access_sampling.cpp)
+add_library(access_sampling SHARED src/access_sampling.cpp src/pfm_wrapper.cpp)
 
 target_include_directories(access_sampling PRIVATE include)
 
