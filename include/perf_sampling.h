@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <trace_buffer.h>
-#include <perf_event.h>
+#include <pfm_wrapper.h>
 
 using BufferPtr          = std::shared_ptr<TraceBuffer>;
 using PerfFd             = int;

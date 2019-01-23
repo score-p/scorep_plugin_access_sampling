@@ -21,7 +21,7 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
     using TimeValuePair = std::pair<scorep::chrono::ticks, double>;
     using MetricProperty = scorep::plugin::metric_property;
 
-    access_sampling () : perf_sampling_ (), perf_event_ ()
+    access_sampling () : perf_sampling_ (), pfm_wrapper_ ()
     {
         std::cout << "Loading Metric Plugin\n";
     }
@@ -32,7 +32,7 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
 
         std::vector<MetricProperty> metric_properties;
 
-        if (perf_event_.metric_is_supported(metric_name))
+        if (pfm_wrapper_.metric_is_supported(metric_name))
         {
             metric_properties.push_back (
             MetricProperty (metric_name, "", "Address").absolute_point ().value_uint ());
@@ -69,7 +69,7 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
 
     private:
     PerfSampling perf_sampling_;
-    PerfEvent perf_event_;
+    PfmWrapper pfm_wrapper_;
 };
 
 SCOREP_METRIC_PLUGIN_CLASS (access_sampling, "access_sampling")
