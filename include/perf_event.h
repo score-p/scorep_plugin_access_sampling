@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -21,18 +23,17 @@ class PerfEvent
     }
     bool metric_is_supported (const std::string &metric_name)
     {
-        pfm_err_t ret = PFM_ERR_INVAL;
+        int ret = -1;
         try
         {
-            pfm_perf_encode_arg_t arg;
             std::string event = supported_events_.at (metric_name);
-            ret = pfm_get_os_event_encoding (event.c_str (), PFM_PLM1, PFM_OS_PERF_EVENT, &arg);
+            ret = pfm_find_event(event.c_str());
         }
         catch (const std::out_of_range &e)
         {
             return false;
         }
-        return ret == PFM_SUCCESS;
+        return ret != -1;
     }
 
     PerfEventAttribute get_perf_event (const std::string &metric_name);
