@@ -10,6 +10,8 @@ add_subdirectory(scorep_plugin_cxx_wrapper)
 
 add_library(access_sampling SHARED src/access_sampling.cpp)
 
+target_include_directories(access_sampling PUBLIC include)
+
 target_compile_options(access_sampling INTERFACE -Wall -pedantic -Wextra)
 
 target_link_libraries(access_sampling PRIVATE Scorep::scorep-plugin-cxx)

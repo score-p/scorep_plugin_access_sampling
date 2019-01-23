@@ -7,7 +7,7 @@
 #include <thread>
 #include <vector>
 
-#include "perf_sampling.h"
+#include <perf_sampling.h>
 
 
 using namespace scorep::plugin::policy;
