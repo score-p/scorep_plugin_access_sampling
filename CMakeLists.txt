@@ -12,6 +12,8 @@ add_subdirectory(test)
 
 add_library(access_sampling SHARED src/access_sampling.cpp src/pfm_wrapper.cpp)
 
+set_target_properties(access_sampling PROPERTIES CXX_STANDARD 17)
+
 target_include_directories(access_sampling PRIVATE include)
 
 target_compile_options(access_sampling INTERFACE -Wall -pedantic -Wextra)
