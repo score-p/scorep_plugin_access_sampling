@@ -1,8 +1,5 @@
 #include <access_sampling.h>
 
-std::mutex buffer_mutex;
-std::vector<BufferPtr> thread_buffers;
-
 std::vector<std::string> split (const std::string &s, char delimiter)
 {
     std::vector<std::string> tokens;
@@ -40,12 +37,7 @@ int32_t access_sampling::add_metric (const std::string &metric)
     auto [event, period] = parse_metric(metric);
     PerfEventAttribute perf_event_attr;
     pfm_wrapper_.get_perf_event(event, period, &perf_event_attr);
-
-    BufferPtr buffer = std::make_shared<TraceBuffer> ();
-    std::lock_guard<std::mutex> lock (buffer_mutex);
-    thread_buffers.push_back (buffer);
-    int32_t id = thread_buffers.size () - 1;
-    return id;
+    return perf_sampling_.event_open(&perf_event_attr);
 }
 
 std::tuple<std::string, unsigned int> access_sampling::parse_metric (const std::string &metric)

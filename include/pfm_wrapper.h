@@ -13,6 +13,8 @@ extern "C"
 #include <perfmon/pfmlib_perf_event.h>
 }
 
+constexpr unsigned int EVENT_COUNT_MAX = 2;
+
 using PerfEventAttribute = struct perf_event_attr;
 
 class PfmWrapper
