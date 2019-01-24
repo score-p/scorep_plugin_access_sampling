@@ -29,8 +29,11 @@ class ThreadData
 class PerfSampling
 {
     public:
-    void event_open (BufferPtr buffer, PerfEventAttribute attr);
+    PerfSampling ();
     std::size_t event_open (PerfEventAttribute *attr);
+
+    private:
+    void initialize_signal_handler ();
 
     private:
     std::mutex buffer_mutex_;
