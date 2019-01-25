@@ -1,4 +1,15 @@
+#include <algorithm>
 #include <pfm_wrapper.h>
+
+static inline std::string to_lower(const std::string & input_string)
+{
+    std::string lower("");
+    for(auto c: input_string)
+    {
+        lower.push_back(std::tolower(c));
+    }
+    return lower;
+}
 
 bool PfmWrapper::is_initialized_ = false;
 
@@ -7,6 +18,7 @@ PfmWrapper::PfmWrapper ()
     if (!is_initialized_)
     {
         pfm_initialize ();
+        is_initialized_ = true;
     }
 }
 
@@ -15,7 +27,7 @@ bool PfmWrapper::metric_is_supported (const std::string &metric_name)
     int ret = -1;
     try
     {
-        std::string event = supported_events_.at (metric_name);
+        std::string event = supported_events_.at (to_lower(metric_name));
         ret = pfm_find_event (event.c_str ());
     }
     catch (const std::out_of_range &e)
@@ -39,18 +51,17 @@ void PfmWrapper::get_perf_event (const std::string &metric_name, uint64_t sample
     perf_attr->size = sizeof (PerfEventAttribute);
     perf_attr->sample_period = sample_period;
 
+    PerfEventAttribute tmp_attr;
     pfm_perf_encode_arg_t arg;
     std::memset (&arg, 0, sizeof (arg));
     arg.size = sizeof (arg);
-    arg.attr = perf_attr;
+    arg.attr = &tmp_attr;
 
-    std::string event = supported_events_.at (metric_name);
+    std::string event = supported_events_.at (to_lower(metric_name));
     pfm_err_t ret = pfm_get_os_event_encoding (event.c_str (), PFM_PLM1, PFM_OS_PERF_EVENT, &arg);
-
     if (ret != PFM_SUCCESS)
     {
         throw std::runtime_error ("pfm could not find event encoding");
     }
-
     perf_attr->config = arg.attr->config;
 }

@@ -28,8 +28,8 @@ class PfmWrapper
 
     private:
     std::map<std::string, std::string> supported_events_ = {
-        { "Load", "MEM_UOPS_RETIRED.ALL_LOADS" },
-        { "Store", "MEM_UOPS_RETIRED.ALL_STORES" }
+        { "load", "MEM_UOPS_RETIRED.ALL_LOADS" },
+        { "store", "MEM_UOPS_RETIRED.ALL_STORES" }
     };
     static bool is_initialized_;
 };
