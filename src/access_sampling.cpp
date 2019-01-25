@@ -23,7 +23,9 @@ std::vector<MetricProperty> access_sampling::get_metric_properties (const std::s
 
     std::vector<MetricProperty> metric_properties;
 
-    if (pfm_wrapper_.metric_is_supported (metric_name))
+    auto [event, dummy] = parse_metric(metric_name);
+
+    if (pfm_wrapper_.metric_is_supported (event))
     {
         metric_properties.push_back (MetricProperty (metric_name, "", "Address").absolute_point ().value_uint ());
     }
