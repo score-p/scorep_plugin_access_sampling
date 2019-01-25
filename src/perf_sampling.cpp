@@ -44,13 +44,13 @@ void PerfSampling::initialize_signal_handler ()
 
 void PerfSampling::event_open (PerfEventAttribute *attr, BufferPtr buffer)
 {
-    thread_data_.add_buffer (buffer);
-
     buffer->fd = syscall (__NR_perf_event_open, attr, 0, -1, -1, 0);
     if (buffer->fd < 1)
     {
         throw std::runtime_error ("Error: perf_event_open failed.");
     }
+
+    thread_data_.add_buffer (buffer->fd, buffer);
 
     if (fcntl (buffer->fd, F_SETFL, O_ASYNC | O_NONBLOCK))
     {

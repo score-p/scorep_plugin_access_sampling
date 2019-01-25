@@ -13,30 +13,28 @@ using BufferPtr = std::shared_ptr<perf_buffer::TraceBuffer>;
 class ThreadData
 {
     public:
-    ThreadData () : event_count_ (0)
+    ThreadData ()
     {
-    }
-    // TODO rename to add_event_buffer
-    void add_buffer (BufferPtr buffer)
-    {
-        buffers_[event_count_++] = buffer;
     }
 
+    void add_buffer (int fd, BufferPtr buffer)
+    {
+        buffers.insert_or_assign(fd, buffer);
+    }
+    /*
+     * TODO buffers[fd] could be dangerous in the signal context
+     * if it throws an exception?
+     * Take a look at find?
+     */
     perf_buffer::TraceBuffer * get_trace_buffer(int fd)
     {
-        for(int i = 0; i < event_count_; i++)
-        {
-            if (buffers_[i]->fd == fd)
-            {
-                return buffers_[i].get();
-            }
-        }
-        return nullptr;
+        return buffers[fd].get();
     }
 
     private:
-    unsigned int event_count_;
-    BufferPtr buffers_[EVENT_COUNT_MAX];
+    // unsigned int event_count_;
+    // BufferPtr buffers_[EVENT_COUNT_MAX];
+    std::map<int, BufferPtr> buffers;
 };
 
 class PerfSampling
