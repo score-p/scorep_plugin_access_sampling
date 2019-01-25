@@ -30,12 +30,8 @@ class PerfSampling
 {
     public:
     PerfSampling ();
-    std::size_t event_open (PerfEventAttribute *attr);
+    void event_open (PerfEventAttribute *attr, BufferPtr trace_buffer);
 
     private:
     void initialize_signal_handler ();
-
-    private:
-    std::mutex buffer_mutex_;
-    std::vector<BufferPtr> thread_buffers_;
 };

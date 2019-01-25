@@ -38,9 +38,8 @@ void PerfSampling::initialize_signal_handler ()
     }
 }
 
-std::size_t PerfSampling::event_open (PerfEventAttribute *attr)
+void PerfSampling::event_open (PerfEventAttribute *attr, BufferPtr buffer)
 {
-    BufferPtr buffer = std::make_shared<perf_buffer::TraceBuffer> ();
     thread_data_.add_buffer (buffer);
 
     buffer->fd = syscall (__NR_perf_event_open, attr, 0, -1, -1, 0);
@@ -67,17 +66,15 @@ std::size_t PerfSampling::event_open (PerfEventAttribute *attr)
         throw std::runtime_error ("Error: Could not set close-on-exec flag on the fd.");
     }
 
-    allocate_ring_buffer (buffer.get ());
+    perf_buffer::allocate_ring_buffer (buffer.get ());
 
     if (fcntl (buffer->fd, F_SETSIG, SIGPROF))
     {
         throw std::runtime_error ("Error: Unable to create a signal on the fd.");
     }
 
-    buffer_mutex_.lock ();
-    thread_buffers_.push_back (buffer);
-    std::size_t id = thread_buffers_.size () - 1;
-    buffer_mutex_.unlock ();
-
-    return id;
+    if ( ioctl( buffer->fd, PERF_EVENT_IOC_ENABLE ) < 0 )
+    {
+        throw std::runtime_error( "Error: Could not enable perf." );
+    }
 }

@@ -39,7 +39,16 @@ int32_t access_sampling::add_metric (const std::string &metric)
     auto [event, period] = parse_metric(metric);
     PerfEventAttribute perf_event_attr;
     pfm_wrapper_.get_perf_event(event, period, &perf_event_attr);
-    return perf_sampling_.event_open(&perf_event_attr);
+
+    BufferPtr buffer = std::make_shared<perf_buffer::TraceBuffer> ();
+    perf_sampling_.event_open(&perf_event_attr, buffer);
+    std::cout << "add_metric: " << std::this_thread::get_id() << " fd " << buffer->fd << '\n';
+
+    buffer_mutex_.lock ();
+    std::size_t id = thread_buffers_.size ();
+    thread_buffers_.push_back (buffer);
+    buffer_mutex_.unlock ();
+    return id;
 }
 
 std::tuple<std::string, unsigned int> access_sampling::parse_metric (const std::string &metric)

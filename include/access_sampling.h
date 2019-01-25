@@ -12,8 +12,6 @@
 
 #include <perf_sampling.h>
 
-extern std::vector<BufferPtr> thread_buffers;
-
 using namespace scorep::plugin::policy;
 using TimeValuePair = std::pair<scorep::chrono::ticks, double>;
 using MetricProperty = scorep::plugin::metric_property;
@@ -39,9 +37,10 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
 
     private:
     std::tuple<std::string, unsigned int> parse_metric (const std::string &metric);
-
-    private : PerfSampling perf_sampling_;
+    PerfSampling perf_sampling_;
     PfmWrapper pfm_wrapper_;
+    std::mutex buffer_mutex_;
+    std::vector<BufferPtr> thread_buffers_;
 };
 
 template <typename CursorType> void access_sampling::get_all_values (int32_t id, CursorType &cursor)
