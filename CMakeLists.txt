@@ -10,7 +10,12 @@ add_subdirectory(scorep_plugin_cxx_wrapper)
 
 add_subdirectory(test)
 
-add_library(access_sampling SHARED src/access_sampling.cpp src/pfm_wrapper.cpp)
+add_library(access_sampling
+            SHARED
+            src/access_sampling.cpp
+            src/pfm_wrapper.cpp
+            src/trace_buffer.cpp
+            src/perf_sampling.cpp)
 
 set_target_properties(access_sampling PROPERTIES CXX_STANDARD 17)
 
