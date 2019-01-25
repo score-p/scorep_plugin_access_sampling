@@ -1,7 +1,7 @@
+#include <cstring>
 #include <perf_sampling.h>
 #include <stdexcept>
 #include <type_traits>
-#include <cstring>
 
 extern "C"
 {
@@ -15,14 +15,18 @@ static thread_local ThreadData thread_data_;
 
 using SignalHandlerFuncPtr = void (*) (int, siginfo_t *, void *);
 
-static void perf_signal_handler(int signal, siginfo_t * info, void * context)
+static void perf_signal_handler (int signal, siginfo_t *info, void *context)
 {
-
+    perf_buffer::TraceBuffer * buffer = thread_data_.get_trace_buffer(info->si_fd);
+    if (buffer != nullptr)
+    {
+        buffer->tid = std::this_thread::get_id ();
+    }
 }
 
 PerfSampling::PerfSampling ()
 {
-    initialize_signal_handler();
+    initialize_signal_handler ();
 }
 
 void PerfSampling::initialize_signal_handler ()
@@ -31,7 +35,7 @@ void PerfSampling::initialize_signal_handler ()
     std::memset (&action, 0, sizeof (struct sigaction));
     action.sa_flags = SA_RESTART;
     action.sa_flags |= SA_SIGINFO;
-    action.sa_sigaction = (SignalHandlerFuncPtr) perf_signal_handler;
+    action.sa_sigaction = (SignalHandlerFuncPtr)perf_signal_handler;
     if (sigaction (SIGPROF, &action, NULL) < 0)
     {
         throw std::runtime_error ("Error: Unable to initialize signal handler");

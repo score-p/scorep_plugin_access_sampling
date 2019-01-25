@@ -35,7 +35,6 @@ std::vector<MetricProperty> access_sampling::get_metric_properties (const std::s
 
 int32_t access_sampling::add_metric (const std::string &metric)
 {
-    std::cout << "add metric called with: " << metric << '\n';
     auto [event, period] = parse_metric(metric);
     PerfEventAttribute perf_event_attr;
     pfm_wrapper_.get_perf_event(event, period, &perf_event_attr);

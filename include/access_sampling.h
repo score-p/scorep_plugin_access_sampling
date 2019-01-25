@@ -45,5 +45,5 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
 
 template <typename CursorType> void access_sampling::get_all_values (int32_t id, CursorType &cursor)
 {
-    std::cout << "Trace Buffer of thread: " << thread_buffers[id]->tid << '\n';
+    std::cout << "Trace Buffer of thread: " << thread_buffers_[id]->tid << " fd " << thread_buffers_[id]->fd << '\n';
 }
