@@ -23,7 +23,7 @@ std::vector<MetricProperty> access_sampling::get_metric_properties (const std::s
 
     std::vector<MetricProperty> metric_properties;
 
-    auto [event, dummy] = parse_metric(metric_name);
+    auto [event, dummy] = parse_metric (metric_name);
 
     if (pfm_wrapper_.metric_is_supported (event))
     {
@@ -35,29 +35,32 @@ std::vector<MetricProperty> access_sampling::get_metric_properties (const std::s
 
 int32_t access_sampling::add_metric (const std::string &metric)
 {
-    auto [event, period] = parse_metric(metric);
+    auto [event, period] = parse_metric (metric);
     PerfEventAttribute perf_event_attr;
-    pfm_wrapper_.get_perf_event(event, period, &perf_event_attr);
+    pfm_wrapper_.get_perf_event (event, period, &perf_event_attr);
 
-    BufferPtr buffer = std::make_shared<perf_buffer::TraceBuffer> ();
-    perf_sampling_.event_open(&perf_event_attr, buffer);
-    std::cout << "add_metric: " << std::this_thread::get_id() << " fd " << buffer->fd << '\n';
+    perf_sampling_.event_open (&perf_event_attr);
 
     buffer_mutex_.lock ();
-    std::size_t id = thread_buffers_.size ();
-    thread_buffers_.push_back (buffer);
+    auto tid = std::this_thread::get_id ();
+    auto buffer_iter = thread_event_buffers_.find (tid);
+    if (buffer_iter == thread_event_buffers_.end ())
+    {
+        thread_event_buffers_[tid] = perf_sampling_.event_buffer ();
+    }
     buffer_mutex_.unlock ();
-    return id;
+
+    return 42;
 }
 
 std::tuple<std::string, unsigned int> access_sampling::parse_metric (const std::string &metric)
 {
-    auto substrings = split(metric,'@');
-    if(substrings.size() != 2)
+    auto substrings = split (metric, '@');
+    if (substrings.size () != 2)
     {
-        throw std::invalid_argument("Invalid metric given");
+        throw std::invalid_argument ("Invalid metric given");
     }
-    return {substrings[0], std::stoul(substrings[1])};
+    return { substrings[0], std::stoul (substrings[1]) };
 }
 
 SCOREP_METRIC_PLUGIN_CLASS (access_sampling, "access_sampling")

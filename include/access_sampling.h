@@ -13,6 +13,7 @@
 #include <perf_sampling.h>
 
 using namespace scorep::plugin::policy;
+using ThreadId = std::thread::id;
 using TimeValuePair = std::pair<scorep::chrono::ticks, double>;
 using MetricProperty = scorep::plugin::metric_property;
 
@@ -40,10 +41,13 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
     PerfSampling perf_sampling_;
     PfmWrapper pfm_wrapper_;
     std::mutex buffer_mutex_;
-    std::vector<BufferPtr> thread_buffers_;
+    std::map<ThreadId, EventBufferPtr> thread_event_buffers_;
 };
 
 template <typename CursorType> void access_sampling::get_all_values (int32_t id, CursorType &cursor)
 {
-    std::cout << "Trace Buffer of thread: " << thread_buffers_[id]->tid << " fd " << thread_buffers_[id]->fd << '\n';
+    for (auto [tid, event_buffer] : thread_event_buffers_)
+    {
+        std::cout << tid << " : " << event_buffer->tid << '\n';
+    }
 }
