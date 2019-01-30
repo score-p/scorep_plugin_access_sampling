@@ -22,7 +22,7 @@ PfmWrapper::PfmWrapper ()
     }
 }
 
-bool PfmWrapper::metric_is_supported (const std::string &metric_name)
+bool PfmWrapper::is_metric_supported (const std::string &metric_name)
 {
     int ret = -1;
     try

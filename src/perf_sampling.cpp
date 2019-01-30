@@ -4,14 +4,14 @@
 #include <type_traits>
 
 thread_local RingBufferMap PerfSampling::ring_buffers_;
-thread_local EventBufferPtr PerfSampling::event_data_ = std::make_shared<perf_buffer::TraceBuffer> ();
+thread_local EventBufferPtr PerfSampling::event_data_ = std::make_shared<perf_buffer::EventBuffer> ();
 
 PerfSampling::PerfSampling ()
 {
     initialize_signal_handler ();
 }
 
-EventBufferPtr PerfSampling::event_buffer ()
+EventBufferPtr PerfSampling::get_event_buffer ()
 {
     return event_data_;
 }

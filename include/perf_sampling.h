@@ -16,7 +16,7 @@ extern "C"
 #include <pfm_wrapper.h>
 #include <trace_buffer.h>
 
-using EventBufferPtr = std::shared_ptr<perf_buffer::TraceBuffer>;
+using EventBufferPtr = std::shared_ptr<perf_buffer::EventBuffer>;
 using RingBufferMap = std::map<int, perf_buffer::PerfRingBuffer>;
 using SignalHandlerFuncPtr = void (*) (int, siginfo_t *, void *);
 
@@ -27,7 +27,7 @@ class PerfSampling
     void event_open (PerfEventAttribute *attr);
 
     void initialize_signal_handler ();
-    EventBufferPtr event_buffer();
+    EventBufferPtr get_event_buffer();
 
     static void signal_handler (int signal, siginfo_t *info, void *context);
 

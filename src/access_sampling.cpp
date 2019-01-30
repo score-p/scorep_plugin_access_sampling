@@ -25,7 +25,7 @@ std::vector<MetricProperty> access_sampling::get_metric_properties (const std::s
 
     auto [event, dummy] = parse_metric (metric_name);
 
-    if (pfm_wrapper_.metric_is_supported (event))
+    if (pfm_wrapper_.is_metric_supported (event))
     {
         metric_properties.push_back (MetricProperty (metric_name, "", "Address").absolute_point ().value_uint ());
     }
@@ -46,7 +46,7 @@ int32_t access_sampling::add_metric (const std::string &metric)
     auto buffer_iter = thread_event_buffers_.find (tid);
     if (buffer_iter == thread_event_buffers_.end ())
     {
-        thread_event_buffers_[tid] = perf_sampling_.event_buffer ();
+        thread_event_buffers_[tid] = perf_sampling_.get_event_buffer ();
     }
     buffer_mutex_.unlock ();
 

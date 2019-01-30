@@ -2,13 +2,13 @@
 #include <catch.hpp>
 #include <pfm_wrapper.h>
 
-TEST_CASE ("PfmWrapper::metric_is_supported")
+TEST_CASE ("PfmWrapper::is_metric_supported")
 {
     PfmWrapper pw;
-    REQUIRE(pw.metric_is_supported("Load") == true );
-    REQUIRE(pw.metric_is_supported("load") == true );
-    REQUIRE(pw.metric_is_supported("Store") == true );
-    REQUIRE(pw.metric_is_supported("FOO") == false );
+    REQUIRE(pw.is_metric_supported("Load") == true );
+    REQUIRE(pw.is_metric_supported("load") == true );
+    REQUIRE(pw.is_metric_supported("Store") == true );
+    REQUIRE(pw.is_metric_supported("FOO") == false );
 }
 
 TEST_CASE("PfmWrapper::get_perf_event")

@@ -67,13 +67,13 @@ struct MemoryEvent
     Level memory_level = Level::MEM_LVL_NA; // 4 Byte
 };
 
-struct TraceBuffer
+struct EventBuffer
 {
     std::thread::id tid;
     static constexpr std::size_t default_buffer_size = 1e6; //=> 32M per thread and event
     boost::circular_buffer<MemoryEvent> buffer;
 
-    TraceBuffer () : buffer (default_buffer_size, MemoryEvent ())
+    EventBuffer () : buffer (default_buffer_size, MemoryEvent ())
     {
     }
 };
