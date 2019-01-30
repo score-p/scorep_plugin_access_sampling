@@ -5,44 +5,32 @@
 #include <vector>
 #include <thread>
 
+extern "C"
+{
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/mman.h>
+#include <sys/syscall.h>
+}
+
 #include <pfm_wrapper.h>
 #include <trace_buffer.h>
 
-using BufferPtr = std::shared_ptr<perf_buffer::TraceBuffer>;
-
-class ThreadData
-{
-    public:
-    ThreadData ()
-    {
-    }
-
-    void add_buffer (int fd, BufferPtr buffer)
-    {
-        buffers.insert_or_assign(fd, buffer);
-    }
-    /*
-     * TODO buffers[fd] could be dangerous in the signal context
-     * if it throws an exception?
-     * Take a look at find?
-     */
-    perf_buffer::TraceBuffer * get_trace_buffer(int fd)
-    {
-        return buffers[fd].get();
-    }
-
-    private:
-    // unsigned int event_count_;
-    // BufferPtr buffers_[EVENT_COUNT_MAX];
-    std::map<int, BufferPtr> buffers;
-};
+using EventBufferPtr = std::shared_ptr<perf_buffer::TraceBuffer>;
+using RingBufferMap = std::map<int, perf_buffer::PerfRingBuffer>;
+using SignalHandlerFuncPtr = void (*) (int, siginfo_t *, void *);
 
 class PerfSampling
 {
     public:
-    PerfSampling ();
-    void event_open (PerfEventAttribute *attr, BufferPtr trace_buffer);
+    PerfSampling();
+    void event_open (PerfEventAttribute *attr);
 
-    private:
     void initialize_signal_handler ();
+    EventBufferPtr event_buffer();
+
+    static void signal_handler (int signal, siginfo_t *info, void *context);
+
+    static thread_local RingBufferMap ring_buffers_;
+    static thread_local EventBufferPtr event_data_;
 };
