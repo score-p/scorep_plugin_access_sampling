@@ -26,11 +26,17 @@ class PerfSampling
     PerfSampling();
     void event_open (PerfEventAttribute *attr);
 
-    void initialize_signal_handler ();
-    EventBufferPtr get_event_buffer();
+    void enable ();
+
+    void disable ();
 
     static void signal_handler (int signal, siginfo_t *info, void *context);
 
+    static inline void enable (int fd);
+
+    static inline void disable (int fd);
+
+    private:
     static thread_local RingBufferMap ring_buffers_;
     static thread_local EventBufferPtr event_data_;
 };

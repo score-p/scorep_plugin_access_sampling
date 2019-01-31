@@ -18,12 +18,14 @@ EventBufferPtr PerfSampling::get_event_buffer ()
 
 void PerfSampling::signal_handler (int signal, siginfo_t *info, void *context)
 {
+    disable (info->si_fd);
     auto ring_buffer_iter = ring_buffers_.find (info->si_fd);
     if (ring_buffer_iter != ring_buffers_.end ())
     {
         ring_buffer_iter->second.prev = 1337;
     }
     event_data_->tid = std::this_thread::get_id ();
+    enable (info->si_fd);
 }
 
 void PerfSampling::initialize_signal_handler ()
@@ -71,9 +73,42 @@ void PerfSampling::event_open (PerfEventAttribute *attr)
     {
         throw std::runtime_error ("Error: Unable to create a signal on the fd.");
     }
+}
 
+void PerfSampling::enable ()
+{
+    for (auto &[fd, dummy] : ring_buffers_)
+    {
     if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
     {
         throw std::runtime_error ("Error: Could not enable perf.");
+    }
+}
+}
+
+void PerfSampling::disable ()
+{
+    for (auto &[fd, dummy] : ring_buffers_)
+    {
+        if (ioctl (fd, PERF_EVENT_IOC_DISABLE) < 0)
+        {
+            throw std::runtime_error ("Error: Could not disable perf.");
+        }
+    }
+}
+
+void PerfSampling::enable (int fd)
+{
+    if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
+    {
+        std::cerr << "Error: Could not enable perf.\n";
+    }
+}
+
+void PerfSampling::disable (int fd)
+{
+    if (ioctl (fd, PERF_EVENT_IOC_DISABLE) < 0)
+    {
+        std::cerr << "Error: Could not disable perf.\n";
     }
 }

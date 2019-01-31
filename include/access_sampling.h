@@ -27,13 +27,9 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, per_
 
     int32_t add_metric (const std::string &event);
 
-    void start ()
-    {
-    }
+    void start ();
 
-    void stop ()
-    {
-    }
+    void stop ();
 
     template <typename CursorType> void get_all_values (int32_t id, CursorType &cursor);
 

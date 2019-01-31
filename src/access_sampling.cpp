@@ -66,4 +66,14 @@ std::tuple<std::string, unsigned int> access_sampling::parse_metric (const std::
     return { substrings[0], std::stoul (substrings[1]) };
 }
 
+void access_sampling::start ()
+{
+    perf_sampling_.enable ();
+}
+
+void access_sampling::stop ()
+{
+    perf_sampling_.disable ();
+}
+
 SCOREP_METRIC_PLUGIN_CLASS (access_sampling, "access_sampling")
