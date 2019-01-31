@@ -5,17 +5,41 @@
 
 extern "C"
 {
+#include <linux/perf_event.h>
 #include <sys/mman.h>
 #include <unistd.h>
 }
 namespace perf_buffer
 {
 
+using EventHeader = struct perf_event_header;
 constexpr std::size_t PERF_SAMPLE_MAX_SIZE = 64;
+
+struct SamplingEvent
+{
+    EventHeader header;
+    uint64_t ip;
+    uint64_t addr;
+    union perf_mem_data_src data_src;
+};
+
+struct UnknownEvent
+{
+    EventHeader header;
+};
 
 struct PerfRingBuffer
 {
+    public:
     explicit PerfRingBuffer (int fd);
+
+    void *read ();
+
+    private:
+    inline void write_tail (uint64_t tail);
+    inline uint64_t read_head ();
+
+    private:
     int moved;
     void *base;
     int mask;
