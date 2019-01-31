@@ -124,11 +124,11 @@ void PerfSampling::enable ()
 {
     for (auto &[fd, dummy] : ring_buffers_)
     {
-    if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
-    {
-        throw std::runtime_error ("Error: Could not enable perf.");
+        if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
+        {
+            throw std::runtime_error ("Error: Could not enable perf.");
+        }
     }
-}
 }
 
 void PerfSampling::disable ()

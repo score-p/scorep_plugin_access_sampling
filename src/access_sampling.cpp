@@ -49,8 +49,8 @@ int32_t access_sampling::add_metric (const std::string &metric)
         thread_event_buffers_[tid] = perf_sampling_.get_event_buffer ();
     }
 
-    int32_t id = all_events_.size();
-    all_events_.push_back(std::make_tuple(tid,event));
+    int32_t id = all_events_.size ();
+    all_events_.push_back (std::make_tuple (tid, event));
     buffer_mutex_.unlock ();
 
     return id;
