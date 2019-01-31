@@ -84,12 +84,20 @@ enum class Level : uint32_t
 
 struct MemoryEvent
 {
+    MemoryEvent ()
+    {
+    }
+    MemoryEvent (uint64_t t, uint64_t a, uint64_t i, Type at, Level l)
+    : time (t), address (a), ip (i), access_type (at), memory_level (l)
+    {
+    }
     uint64_t time = 0; // 8 Byte
     uint64_t address = 0; // 8 Byte
     uint64_t ip = 0; // 8 Byte --> unw_word_t
     Type access_type = Type::NA; // 4 Byte
     Level memory_level = Level::MEM_LVL_NA; // 4 Byte
 };
+std::ostream &operator<< (std::ostream &os, const MemoryEvent &me);
 
 struct EventBuffer
 {
