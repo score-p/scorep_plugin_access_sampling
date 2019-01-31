@@ -50,4 +50,11 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
     {
         std::cout << "Something went wrong in signal handler" << '\n';
     }
+    auto buffer_size = thread_event_buffers_.at(tid)->buffer.size();
+    if(thread_event_buffers_.at(tid)->number_of_accesses > buffer_size)
+    {
+        std::cerr << "Event buffer was too small and events are overwritten\n";
+    }
+
+    std::cout << "Number of occured access events: " << thread_event_buffers_.at(tid)->number_of_accesses << '\n';
 }

@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include <scorep/plugin/plugin.hpp>
+
 thread_local RingBufferMap PerfSampling::ring_buffers_;
 thread_local EventBufferPtr PerfSampling::event_data_ = std::make_shared<perf_buffer::EventBuffer> ();
 
@@ -16,13 +18,56 @@ EventBufferPtr PerfSampling::get_event_buffer ()
     return event_data_;
 }
 
+void PerfSampling::process_events (perf_buffer::PerfRingBuffer *ring_buffer)
+{
+    using namespace perf_buffer;
+
+    void *current_pointer = NULL;
+    while ((current_pointer = ring_buffer->read ()) != NULL)
+    {
+        UnknownEvent *current_event = static_cast<UnknownEvent *> (current_pointer);
+
+        switch (current_event->header.type)
+        {
+        /* only process sampling events */
+        case PERF_RECORD_SAMPLE:
+        {
+            SamplingEvent *current_event = static_cast<SamplingEvent *> (current_pointer);
+
+            if (current_event->addr != 0)
+            {
+                event_data_->number_of_accesses++;
+                event_data_->buffer.push_back (
+                MemoryEvent (scorep::chrono::measurement_clock::now ().count (),
+                             current_event->addr, current_event->ip, Type::NA, Level::MEM_LVL_NA));
+                continue;
+            }
+            break;
+        }
+        case PERF_RECORD_THROTTLE:
+        {
+            // TODO debug msg.
+            break;
+        }
+        case PERF_RECORD_UNTHROTTLE:
+        {
+            // TODO debug msg.
+            break;
+        }
+        default:
+            std::cerr << "Unknown record type: " << current_event->header.type << '\n';
+            break;
+        }
+    }
+}
+
 void PerfSampling::signal_handler (int signal, siginfo_t *info, void *context)
 {
     disable (info->si_fd);
     auto ring_buffer_iter = ring_buffers_.find (info->si_fd);
     if (ring_buffer_iter != ring_buffers_.end ())
     {
-        ring_buffer_iter->second.prev = 1337;
+        process_events (&ring_buffer_iter->second);
     }
     event_data_->tid = std::this_thread::get_id ();
     enable (info->si_fd);

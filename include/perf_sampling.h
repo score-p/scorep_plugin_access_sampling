@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <mutex>
-#include <vector>
 #include <thread>
+#include <vector>
 
 extern "C"
 {
@@ -23,13 +23,17 @@ using SignalHandlerFuncPtr = void (*) (int, siginfo_t *, void *);
 class PerfSampling
 {
     public:
-    PerfSampling();
+    PerfSampling ();
     void event_open (PerfEventAttribute *attr);
+    void initialize_signal_handler ();
+    EventBufferPtr get_event_buffer ();
 
     void enable ();
 
     void disable ();
 
+    private:
+    static inline void process_events (perf_buffer::PerfRingBuffer *ring_buffer);
     static void signal_handler (int signal, siginfo_t *info, void *context);
 
     static inline void enable (int fd);
