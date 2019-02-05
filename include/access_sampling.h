@@ -48,8 +48,19 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
     std::cout << "Record " << metric << " metric on thread " << tid << '\n';
     if(tid != thread_event_buffers_[tid]->tid)
     {
-        std::cout << "Something went wrong in signal handler" << '\n';
+        throw std::runtime_error("Something went wrong in signal handler");
     }
+
+    auto event_type = perf_buffer::typeFromString(metric);
+
+    for(auto & event: thread_event_buffers_.at(tid)->buffer)
+    {
+        if(event_type == event.access_type)
+        {
+            cursor.write(scorep::chrono::ticks(event.time), event.address);
+        }
+    }
+
     auto buffer_size = thread_event_buffers_.at(tid)->buffer.size();
     if(thread_event_buffers_.at(tid)->number_of_accesses > buffer_size)
     {
@@ -57,4 +68,5 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
     }
 
     std::cout << "Number of occured access events: " << thread_event_buffers_.at(tid)->number_of_accesses << '\n';
+
 }

@@ -93,4 +93,26 @@ std::ostream &operator<< (std::ostream &os, const MemoryEvent &me)
     return os;
 }
 
+Type typeFromString (const std::string &type)
+{
+    if (type == "store")
+    {
+        return Type::LOAD;
+    }
+    else if (type == "load")
+    {
+        return Type::STORE;
+    }
+    else if (type == "PREFETCH")
+    {
+        return Type::PREFETCH;
+    }
+    else if (type == "EXEC")
+    {
+        return Type::EXEC;
+    }
+
+    return Type::NA;
+}
+
 } // namespace perf_buffer

@@ -61,8 +61,10 @@ enum class Type : uint32_t
     STORE,
     PREFETCH,
     EXEC,
-    NA
+    NA,
 };
+
+Type typeFromString (const std::string &type);
 
 enum class Level : uint32_t
 {
@@ -103,10 +105,10 @@ struct EventBuffer
 {
     uint64_t number_of_accesses = 0;
     std::thread::id tid;
-    static constexpr std::size_t default_buffer_size = 1e6; //=> 32M per thread and event
+    static constexpr std::size_t default_buffer_size = 5e6; //=> 32M per thread and event
     boost::circular_buffer<MemoryEvent> buffer;
 
-    EventBuffer () : buffer (default_buffer_size)
+    EventBuffer () : buffer (default_buffer_size, MemoryEvent())
     {
     }
 };
