@@ -55,7 +55,7 @@ struct PerfRingBuffer
     static constexpr std::size_t BUFFERSIZE_DEFAULT = 64;
 };
 
-enum class Type : uint32_t
+enum class AccessType : uint32_t
 {
     LOAD,
     STORE,
@@ -64,7 +64,8 @@ enum class Type : uint32_t
     NA,
 };
 
-Type typeFromString (const std::string &type);
+AccessType accessTypeFromString (const std::string &type);
+AccessType accessTypeFromPerf (uint64_t mem_op);
 
 enum class Level : uint32_t
 {
@@ -84,31 +85,31 @@ enum class Level : uint32_t
     MEM_LVL_UNC, //        Uncached memory
 };
 
-struct MemoryEvent
+struct AccessEvent
 {
-    MemoryEvent ()
+    AccessEvent ()
     {
     }
-    MemoryEvent (uint64_t t, uint64_t a, uint64_t i, Type at, Level l)
+    AccessEvent (uint64_t t, uint64_t a, uint64_t i, AccessType at, Level l)
     : time (t), address (a), ip (i), access_type (at), memory_level (l)
     {
     }
     uint64_t time = 0; // 8 Byte
     uint64_t address = 0; // 8 Byte
     uint64_t ip = 0; // 8 Byte --> unw_word_t
-    Type access_type = Type::NA; // 4 Byte
+    AccessType access_type = AccessType::NA; // 4 Byte
     Level memory_level = Level::MEM_LVL_NA; // 4 Byte
 };
-std::ostream &operator<< (std::ostream &os, const MemoryEvent &me);
+std::ostream &operator<< (std::ostream &os, const AccessEvent &me);
 
 struct EventBuffer
 {
     uint64_t number_of_accesses = 0;
     std::thread::id tid;
     static constexpr std::size_t default_buffer_size = 5e6; //=> 32M per thread and event
-    boost::circular_buffer<MemoryEvent> buffer;
+    boost::circular_buffer<AccessEvent> data;
 
-    EventBuffer () : buffer (default_buffer_size, MemoryEvent())
+    EventBuffer () : data (default_buffer_size, AccessEvent())
     {
     }
 };

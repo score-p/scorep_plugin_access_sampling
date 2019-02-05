@@ -85,34 +85,35 @@ void *PerfRingBuffer::read ()
     return event;
 }
 
-std::ostream &operator<< (std::ostream &os, const MemoryEvent &me)
+std::ostream &operator<< (std::ostream &os, const AccessEvent &me)
 {
-    auto type = (me.access_type == Type::LOAD) ? "load" : "store";
+    auto type = (me.access_type == AccessType::LOAD) ? "load" : "store";
     os << "Address " << std::hex << me.address << std::dec << ", Time " << me.time << ", IP "
-       << std::hex << me.ip << std::dec << ", Type " << type;
+       << std::hex << me.ip << std::dec << ", AccessType " << type;
     return os;
 }
 
-Type typeFromString (const std::string &type)
+AccessType accessTypeFromString (const std::string &type)
 {
     if (type == "store")
     {
-        return Type::LOAD;
+        return AccessType::LOAD;
     }
     else if (type == "load")
     {
-        return Type::STORE;
+        return AccessType::STORE;
     }
     else if (type == "PREFETCH")
     {
-        return Type::PREFETCH;
+        return AccessType::PREFETCH;
     }
     else if (type == "EXEC")
     {
-        return Type::EXEC;
+        return AccessType::EXEC;
     }
 
-    return Type::NA;
+    return AccessType::NA;
+}
 }
 
 } // namespace perf_buffer

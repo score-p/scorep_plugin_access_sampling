@@ -51,9 +51,9 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
         throw std::runtime_error("Something went wrong in signal handler");
     }
 
-    auto event_type = perf_buffer::typeFromString(metric);
+    auto event_type = perf_buffer::accessTypeFromString(metric);
 
-    for(auto & event: thread_event_buffers_.at(tid)->buffer)
+    for(auto & event: thread_event_buffers_.at(tid)->data)
     {
         if(event_type == event.access_type)
         {
@@ -61,7 +61,7 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
         }
     }
 
-    auto buffer_size = thread_event_buffers_.at(tid)->buffer.size();
+    auto buffer_size = thread_event_buffers_.at(tid)->data.size();
     if(thread_event_buffers_.at(tid)->number_of_accesses > buffer_size)
     {
         std::cerr << "Event buffer was too small and events are overwritten\n";
