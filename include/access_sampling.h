@@ -18,7 +18,7 @@ using TimeValuePair = std::pair<scorep::chrono::ticks, double>;
 using MetricProperty = scorep::plugin::metric_property;
 using ThreadEventPair = std::tuple<ThreadId,std::string>;
 
-class access_sampling : public scorep::plugin::base<access_sampling, async, per_thread, scorep_clock>
+class access_sampling : public scorep::plugin::base<access_sampling, async, post_mortem, per_thread, scorep_clock>
 {
     public:
     access_sampling ();

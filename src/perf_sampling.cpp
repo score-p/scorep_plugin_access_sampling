@@ -6,11 +6,12 @@
 #include <scorep/plugin/plugin.hpp>
 
 thread_local RingBufferMap PerfSampling::ring_buffers_;
-thread_local EventBufferPtr PerfSampling::event_data_ = std::make_shared<perf_buffer::EventBuffer> ();
+thread_local EventBufferPtr PerfSampling::event_data_;
 
 PerfSampling::PerfSampling ()
 {
     initialize_signal_handler ();
+    event_data_ = std::make_shared<perf_buffer::EventBuffer> (perf_buffer::EventBuffer ());
 }
 
 EventBufferPtr PerfSampling::get_event_buffer ()
@@ -63,6 +64,11 @@ void PerfSampling::process_events (perf_buffer::PerfRingBuffer *ring_buffer)
 
 void PerfSampling::signal_handler (int signal, siginfo_t *info, void *context)
 {
+    int signalfd (int fd, const sigset_t *mask, int flags);
+    // sigset_t blocksig;
+    // sigemptyset(&blocksig);
+    // sigaddset(&blocksig,SIGPROF);
+    // sigprocmask(SIG_BLOCK,&blocksig,NULL);
     disable (info->si_fd);
     auto ring_buffer_iter = ring_buffers_.find (info->si_fd);
     if (ring_buffer_iter != ring_buffers_.end ())
@@ -71,6 +77,8 @@ void PerfSampling::signal_handler (int signal, siginfo_t *info, void *context)
     }
     event_data_->tid = std::this_thread::get_id ();
     enable (info->si_fd);
+    // Unblock
+    // sigprocmask(SIG_UNBLOCK,&blocksig,NULL);
 }
 
 void PerfSampling::initialize_signal_handler ()
@@ -133,6 +141,10 @@ void PerfSampling::enable ()
 
 void PerfSampling::disable ()
 {
+    sigset_t blocksig;
+    sigemptyset (&blocksig);
+    sigaddset (&blocksig, SIGPROF);
+    sigprocmask (SIG_BLOCK, &blocksig, NULL);
     for (auto &[fd, dummy] : ring_buffers_)
     {
         if (ioctl (fd, PERF_EVENT_IOC_DISABLE) < 0)
