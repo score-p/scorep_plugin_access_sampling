@@ -114,6 +114,24 @@ AccessType accessTypeFromString (const std::string &type)
 
     return AccessType::NA;
 }
+
+AccessType accessTypeFromPerf (uint64_t mem_op)
+{
+    switch(mem_op)
+    {
+        case PERF_MEM_OP_STORE:
+        return AccessType::STORE;
+
+        case PERF_MEM_OP_LOAD:
+        return AccessType::LOAD;
+
+        case PERF_MEM_OP_EXEC:
+        return AccessType::EXEC;
+
+        case PERF_MEM_OP_PFETCH:
+        return AccessType::PREFETCH;
+    }
+    return AccessType::NA;
 }
 
 } // namespace perf_buffer

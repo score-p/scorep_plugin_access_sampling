@@ -37,10 +37,14 @@ void PerfSampling::process_events (perf_buffer::PerfRingBuffer *ring_buffer)
 
             if (current_event->addr != 0)
             {
+                // current_event->data_src.mem_op == ;
                 event_data_->number_of_accesses++;
-                event_data_->buffer.push_back (
-                MemoryEvent (scorep::chrono::measurement_clock::now ().count (),
-                             current_event->addr, current_event->ip, Type::NA, Level::MEM_LVL_NA));
+                event_data_->data.push_back (
+                AccessEvent (scorep::chrono::measurement_clock::now ().count (),
+                             current_event->addr,
+                             current_event->ip,
+                             perf_buffer::accessTypeFromPerf(current_event->data_src.mem_op),
+                             Level::MEM_LVL_NA));
                 continue;
             }
             break;
