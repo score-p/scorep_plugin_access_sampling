@@ -95,19 +95,19 @@ std::ostream &operator<< (std::ostream &os, const AccessEvent &me)
 
 AccessType accessTypeFromString (const std::string &type)
 {
-    if (type == "store")
+    if (type.find("Load") != std::string::npos)
     {
         return AccessType::LOAD;
     }
-    else if (type == "load")
+    else if (type.find("Store") != std::string::npos)
     {
         return AccessType::STORE;
     }
-    else if (type == "PREFETCH")
+    else if (type.find("Prefetch") != std::string::npos)
     {
         return AccessType::PREFETCH;
     }
-    else if (type == "EXEC")
+    else if (type.find("Exec") != std::string::npos)
     {
         return AccessType::EXEC;
     }
