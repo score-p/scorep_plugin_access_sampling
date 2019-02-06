@@ -120,4 +120,9 @@ AccessType accessTypeFromPerf (uint64_t mem_op)
     return static_cast<AccessType>(mem_op);
 }
 
+MemoryLevel memoryLevelFromPerf(const SamplingEvent & event)
+{
+    return static_cast<MemoryLevel>(event.data_src.mem_lvl);
+}
+
 } // namespace perf_buffer

@@ -67,30 +67,31 @@ enum class AccessType : uint32_t
 AccessType accessTypeFromString (const std::string &type);
 AccessType accessTypeFromPerf (uint64_t mem_op);
 
-enum class Level : uint32_t
+enum class MemoryLevel : uint32_t
 {
-    MEM_LVL_NA, //         Not available
-    MEM_LVL_HIT, //        Hit
-    MEM_LVL_MISS, //       Miss
-    MEM_LVL_L1, //         Level 1 cache
-    MEM_LVL_LFB, //        Line fill buffer
-    MEM_LVL_L2, //         Level 2 cache
-    MEM_LVL_L3, //         Level 3 cache
-    MEM_LVL_LOC_RAM, //    Local DRAM
-    MEM_LVL_REM_RAM1, //   Remote DRAM 1 hop
-    MEM_LVL_REM_RAM2, //   Remote DRAM 2 hops
-    MEM_LVL_REM_CCE1, //   Remote cache 1 hop
-    MEM_LVL_REM_CCE2, //   Remote cache 2 hops
-    MEM_LVL_IO, //         I/O memory
-    MEM_LVL_UNC, //        Uncached memory
+    MEM_LVL_NA = PERF_MEM_LVL_NA, //         Not available
+    MEM_LVL_HIT = PERF_MEM_LVL_HIT, //        Hit
+    MEM_LVL_MISS = PERF_MEM_LVL_MISS, //       Miss
+    MEM_LVL_L1 = PERF_MEM_LVL_L1, //         Level 1 cache
+    MEM_LVL_LFB = PERF_MEM_LVL_LFB, //        Line fill buffer
+    MEM_LVL_L2 = PERF_MEM_LVL_L2, //         Level 2 cache
+    MEM_LVL_L3 = PERF_MEM_LVL_L2, //         Level 3 cache
+    MEM_LVL_LOC_RAM = PERF_MEM_LVL_LOC_RAM, //    Local DRAM
+    MEM_LVL_REM_RAM1 = PERF_MEM_LVL_REM_RAM1, //   Remote DRAM 1 hop
+    MEM_LVL_REM_RAM2 = PERF_MEM_LVL_REM_RAM2, //   Remote DRAM 2 hops
+    MEM_LVL_REM_CCE1 = PERF_MEM_LVL_REM_CCE1, //   Remote cache 1 hop
+    MEM_LVL_REM_CCE2 = PERF_MEM_LVL_REM_CCE1, //   Remote cache 2 hops
+    MEM_LVL_IO = PERF_MEM_LVL_IO, //         I/O memory
+    MEM_LVL_UNC = PERF_MEM_LVL_UNC, //        Uncached memory
 };
 
+MemoryLevel memoryLevelFromPerf(const SamplingEvent & event);
 struct AccessEvent
 {
     AccessEvent ()
     {
     }
-    AccessEvent (uint64_t t, uint64_t a, uint64_t i, AccessType at, Level l)
+    AccessEvent (uint64_t t, uint64_t a, uint64_t i, AccessType at, MemoryLevel l)
     : time (t), address (a), ip (i), access_type (at), memory_level (l)
     {
     }
@@ -98,7 +99,7 @@ struct AccessEvent
     uint64_t address = 0; // 8 Byte
     uint64_t ip = 0; // 8 Byte --> unw_word_t
     AccessType access_type = AccessType::NA; // 4 Byte
-    Level memory_level = Level::MEM_LVL_NA; // 4 Byte
+    MemoryLevel memory_level = MemoryLevel::MEM_LVL_NA; // 4 Byte
 };
 std::ostream &operator<< (std::ostream &os, const AccessEvent &me);
 

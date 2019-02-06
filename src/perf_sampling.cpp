@@ -43,7 +43,7 @@ void PerfSampling::process_events (perf_buffer::PerfRingBuffer *ring_buffer)
                              current_event->addr,
                              current_event->ip,
                              perf_buffer::accessTypeFromPerf(current_event->data_src.mem_op),
-                             Level::MEM_LVL_NA));
+                             perf_buffer::memoryLevelFromPerf(*current_event)));
                 continue;
             }
             break;
