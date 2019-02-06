@@ -57,11 +57,11 @@ struct PerfRingBuffer
 
 enum class AccessType : uint32_t
 {
-    LOAD,
-    STORE,
-    PREFETCH,
-    EXEC,
-    NA,
+    LOAD = PERF_MEM_OP_LOAD,
+    STORE = PERF_MEM_OP_STORE,
+    PREFETCH = PERF_MEM_OP_PFETCH,
+    EXEC = PERF_MEM_OP_EXEC,
+    NA = PERF_MEM_OP_NA,
 };
 
 AccessType accessTypeFromString (const std::string &type);
