@@ -34,7 +34,6 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     template <typename CursorType> void get_all_values (int32_t id, CursorType &cursor);
 
     private:
-    std::tuple<std::string, unsigned int> parse_metric (const std::string &metric);
     PerfSampling perf_sampling_;
     PfmWrapper pfm_wrapper_;
     std::mutex buffer_mutex_;

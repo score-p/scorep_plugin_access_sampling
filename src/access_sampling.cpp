@@ -1,16 +1,5 @@
 #include <access_sampling.h>
-
-std::vector<std::string> split (const std::string &s, char delimiter)
-{
-    std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream (s);
-    while (std::getline (tokenStream, token, delimiter))
-    {
-        tokens.push_back (token);
-    }
-    return tokens;
-}
+#include <utils.h>
 
 access_sampling::access_sampling () : perf_sampling_ (), pfm_wrapper_ ()
 {
@@ -54,16 +43,6 @@ int32_t access_sampling::add_metric (const std::string &metric)
     buffer_mutex_.unlock ();
 
     return id;
-}
-
-std::tuple<std::string, unsigned int> access_sampling::parse_metric (const std::string &metric)
-{
-    auto substrings = split (metric, '@');
-    if (substrings.size () != 2)
-    {
-        throw std::invalid_argument ("Invalid metric given");
-    }
-    return { substrings[0], std::stoul (substrings[1]) };
 }
 
 void access_sampling::start ()

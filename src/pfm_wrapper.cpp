@@ -1,15 +1,6 @@
 #include <algorithm>
 #include <pfm_wrapper.h>
-
-static inline std::string to_lower(const std::string & input_string)
-{
-    std::string lower("");
-    for(auto c: input_string)
-    {
-        lower.push_back(std::tolower(c));
-    }
-    return lower;
-}
+#include <utils.h>
 
 bool PfmWrapper::is_initialized_ = false;
 
