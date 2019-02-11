@@ -40,11 +40,11 @@ struct PerfRingBuffer
     inline uint64_t read_head ();
 
     private:
-    int moved;
-    void *base;
-    int mask;
-    uint64_t prev;
-    char event_copy[PERF_SAMPLE_MAX_SIZE] __attribute__ ((aligned (8)));
+    int moved_;
+    void *base_;
+    int mask_;
+    uint64_t prev_;
+    char event_copy_[PERF_SAMPLE_MAX_SIZE] __attribute__ ((aligned (8)));
 
     /**
      * Length of the memory mapping
