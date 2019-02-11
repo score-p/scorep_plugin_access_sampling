@@ -1,17 +1,24 @@
 #include <cstring>
-#include <perf_sampling.h>
 #include <stdexcept>
 #include <type_traits>
 
 #include <scorep/plugin/plugin.hpp>
+
+#include <perf_sampling.h>
+#include <utils.h>
 
 thread_local RingBufferMap PerfSampling::ring_buffers_;
 thread_local EventBufferPtr PerfSampling::event_data_;
 
 PerfSampling::PerfSampling ()
 {
+    std::size_t buffer_size = read_buffer_size ();
+
+    std::cout << "Esitmated memory consumption per thread " << to_mb(buffer_size * sizeof(AccessEvent)) << " MB\n";
+
+    event_data_ = std::make_shared<EventBuffer> (EventBuffer (buffer_size));
+
     initialize_signal_handler ();
-    event_data_ = std::make_shared<EventBuffer> (EventBuffer ());
 }
 
 EventBufferPtr PerfSampling::get_event_buffer ()
@@ -38,11 +45,9 @@ void PerfSampling::process_events (PerfRingBuffer *ring_buffer)
             {
                 event_data_->number_of_accesses++;
                 event_data_->data.push_back (
-                AccessEvent (scorep::chrono::measurement_clock::now ().count (),
-                             current_event->addr,
-                             current_event->ip,
-                             accessTypeFromPerf(current_event->data_src.mem_op),
-                             memoryLevelFromPerf(*current_event)));
+                AccessEvent (scorep::chrono::measurement_clock::now ().count (), current_event->addr,
+                             current_event->ip, accessTypeFromPerf (current_event->data_src.mem_op),
+                             memoryLevelFromPerf (*current_event)));
                 continue;
             }
             break;

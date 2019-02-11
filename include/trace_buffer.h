@@ -105,10 +105,9 @@ struct EventBuffer
 {
     uint64_t number_of_accesses = 0;
     std::thread::id tid;
-    static constexpr std::size_t default_buffer_size = 5e6; //=> 32M per thread and event
     boost::circular_buffer<AccessEvent> data;
 
-    EventBuffer () : data (default_buffer_size)
+    explicit EventBuffer (std::size_t size) : data (size)
     {
     }
 };
