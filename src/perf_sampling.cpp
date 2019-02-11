@@ -11,7 +11,7 @@ thread_local EventBufferPtr PerfSampling::event_data_;
 PerfSampling::PerfSampling ()
 {
     initialize_signal_handler ();
-    event_data_ = std::make_shared<perf_buffer::EventBuffer> (perf_buffer::EventBuffer ());
+    event_data_ = std::make_shared<EventBuffer> (EventBuffer ());
 }
 
 EventBufferPtr PerfSampling::get_event_buffer ()
@@ -19,9 +19,8 @@ EventBufferPtr PerfSampling::get_event_buffer ()
     return event_data_;
 }
 
-void PerfSampling::process_events (perf_buffer::PerfRingBuffer *ring_buffer)
+void PerfSampling::process_events (PerfRingBuffer *ring_buffer)
 {
-    using namespace perf_buffer;
 
     void *current_pointer = NULL;
     while ((current_pointer = ring_buffer->read ()) != NULL)
@@ -42,8 +41,8 @@ void PerfSampling::process_events (perf_buffer::PerfRingBuffer *ring_buffer)
                 AccessEvent (scorep::chrono::measurement_clock::now ().count (),
                              current_event->addr,
                              current_event->ip,
-                             perf_buffer::accessTypeFromPerf(current_event->data_src.mem_op),
-                             perf_buffer::memoryLevelFromPerf(*current_event)));
+                             accessTypeFromPerf(current_event->data_src.mem_op),
+                             memoryLevelFromPerf(*current_event)));
                 continue;
             }
             break;

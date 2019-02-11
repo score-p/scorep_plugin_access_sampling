@@ -2,9 +2,6 @@
 #include <cstring>
 #include <trace_buffer.h>
 
-namespace perf_buffer
-{
-
 #define rmb() asm volatile("lfence" ::: "memory")
 #define mb() asm volatile("mfence" ::: "memory")
 #define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
@@ -124,5 +121,3 @@ MemoryLevel memoryLevelFromPerf(const SamplingEvent & event)
 {
     return static_cast<MemoryLevel>(event.data_src.mem_lvl);
 }
-
-} // namespace perf_buffer

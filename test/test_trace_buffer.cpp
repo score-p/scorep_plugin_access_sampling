@@ -3,8 +3,6 @@
 #include <iostream>
 #include <trace_buffer.h>
 
-using namespace perf_buffer;
-
 TEST_CASE ("trace_buffer::memoryLevelFromPerf")
 {
     SamplingEvent event;

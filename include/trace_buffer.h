@@ -9,8 +9,6 @@ extern "C"
 #include <sys/mman.h>
 #include <unistd.h>
 }
-namespace perf_buffer
-{
 
 using EventHeader = struct perf_event_header;
 constexpr std::size_t PERF_SAMPLE_MAX_SIZE = 64;
@@ -114,5 +112,3 @@ struct EventBuffer
     {
     }
 };
-
-} // namespace perf_buffer

@@ -16,8 +16,8 @@ extern "C"
 #include <pfm_wrapper.h>
 #include <trace_buffer.h>
 
-using EventBufferPtr = std::shared_ptr<perf_buffer::EventBuffer>;
-using RingBufferMap = std::map<int, perf_buffer::PerfRingBuffer>;
+using EventBufferPtr = std::shared_ptr<EventBuffer>;
+using RingBufferMap = std::map<int, PerfRingBuffer>;
 using SignalHandlerFuncPtr = void (*) (int, siginfo_t *, void *);
 
 class PerfSampling
@@ -33,7 +33,7 @@ class PerfSampling
     void disable ();
 
     private:
-    static inline void process_events (perf_buffer::PerfRingBuffer *ring_buffer);
+    static inline void process_events (PerfRingBuffer *ring_buffer);
     static void signal_handler (int signal, siginfo_t *info, void *context);
 
     static inline void enable (int fd);

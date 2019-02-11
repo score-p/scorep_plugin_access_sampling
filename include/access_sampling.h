@@ -51,7 +51,7 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
         throw std::runtime_error("Something went wrong in signal handler");
     }
 
-    auto event_type = perf_buffer::accessTypeFromString(metric);
+    auto event_type = accessTypeFromString(metric);
 
     for(auto & event: thread_event_buffers_.at(tid)->data)
     {
