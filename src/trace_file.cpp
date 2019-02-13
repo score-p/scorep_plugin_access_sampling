@@ -18,17 +18,19 @@ static auto ios_open_mode (TraceFileMode mode)
 TraceFile::TraceFile (const std::string &file, TraceFileMode mode)
 {
     auto ios_mode = ios_open_mode(mode);
-    file_handle_.open(file, ios_mode | std::ios::binary);
+    file_.open(file, ios_mode | std::ios::binary);
 }
 
 TraceFile::~TraceFile ()
 {
-    file_handle_.close();
+    file_.close();
 }
 
 void TraceFile::write (const EventBuffer &event_buffer)
 {
-    // TODO implement
+    TraceMetaData md(event_buffer);
+    write_meta_data(md);
+    // write_raw_data(event_buffer);
 }
 
 AccessSequence TraceFile::read ()
@@ -36,3 +38,26 @@ AccessSequence TraceFile::read ()
     // TODO implement
     return AccessSequence ();
 }
+
+void TraceFile::write_meta_data(const TraceMetaData & md)
+{
+    file_ << key_tag_;
+    file_.write((char *) &md, sizeof(md));
+}
+
+void TraceFile::write_raw_data(const void * data)
+{
+    // TODO implement
+}
+
+void TraceFile::read_meta_data(TraceMetaData * md)
+{
+
+}
+
+
+void * TraceFile::read_raw_data(const TraceMetaData & md)
+{
+    return nullptr;
+}
+

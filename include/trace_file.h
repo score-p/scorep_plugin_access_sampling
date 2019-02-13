@@ -3,6 +3,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <sstream>
 
 #include <trace_buffer.h>
 
@@ -24,5 +25,30 @@ class TraceFile
     AccessSequence read ();
 
     private:
-    std::fstream file_handle_;
+    struct TraceMetaData
+    {
+        uint64_t access_count;
+        uint64_t tid;
+
+        TraceMetaData()
+        :access_count(0),tid(0)
+        {}
+
+        TraceMetaData(const EventBuffer &event_buffer)
+        :access_count(event_buffer.number_of_accesses)
+        {
+            std::stringstream ss;
+            ss << event_buffer.tid;
+            tid = std::stoull(ss.str());
+        }
+    };
+
+    void write_meta_data (const TraceMetaData & md);
+    void write_raw_data (const void * data);
+    void read_meta_data(TraceMetaData * md);
+    void * read_raw_data(const TraceMetaData & md);
+
+    private:
+    std::fstream file_;
+    static constexpr const char *key_tag_ = "ATRACE";
 };
