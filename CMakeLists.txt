@@ -16,12 +16,13 @@ add_library(access_sampling
             src/pfm_wrapper.cpp
             src/trace_buffer.cpp
             src/perf_sampling.cpp
+            src/trace_file.cpp
             src/utils.cpp)
 
 set_target_properties(access_sampling PROPERTIES CXX_STANDARD 17)
 
 target_include_directories(access_sampling PRIVATE include)
 
-target_compile_options(access_sampling INTERFACE -Wall -pedantic -Wextra)
+target_compile_options(access_sampling INTERFACE -Wall -pedantic -Wextra -gdwarf -O0)
 
 target_link_libraries(access_sampling PRIVATE Scorep::scorep-plugin-cxx)
