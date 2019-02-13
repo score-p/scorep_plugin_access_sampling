@@ -1,9 +1,21 @@
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
 #include <catch.hpp>
 #include <thread>
+#include <boost/filesystem.hpp>
 
 #include <trace_buffer.h>
 #include <trace_file.h>
+
+namespace bf = boost::filesystem;
+
+TEST_CASE("tracefile::create")
+{
+    {
+        TraceFile tf("./foo", TraceFileMode::WRITE);
+    }
+    bf::path p {"./foo"};
+    REQUIRE(bf::is_regular_file(p));
+}
 
 TEST_CASE ("tracefile::simple")
 {
