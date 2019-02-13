@@ -13,7 +13,7 @@ PerfRingBuffer::PerfRingBuffer (int fd)
 
     base_ = mmap (NULL, (BUFFERSIZE_DEFAULT + 1) * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
-    if (base_ == MAP_FAILED)
+    if (base_ == MAP_FAILED || base_ == nullptr)
     {
         throw std::runtime_error ("Error: Failed to allocate ring buffer.");
     }

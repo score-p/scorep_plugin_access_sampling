@@ -29,8 +29,8 @@ EventBufferPtr PerfSampling::get_event_buffer ()
 void PerfSampling::process_events (PerfRingBuffer *ring_buffer)
 {
 
-    void *current_pointer = NULL;
-    while ((current_pointer = ring_buffer->read ()) != NULL)
+    void *current_pointer = nullptr;
+    while ((current_pointer = ring_buffer->read ()) != nullptr)
     {
         UnknownEvent *current_event = static_cast<UnknownEvent *> (current_pointer);
 
@@ -125,6 +125,10 @@ void PerfSampling::event_open (PerfEventAttribute *attr)
     if (fcntl (fd, F_SETSIG, SIGPROF))
     {
         throw std::runtime_error ("Error: Unable to create a signal on the fd.");
+    }
+    if (ioctl(fd, PERF_EVENT_IOC_RESET, 0) < 0)
+    {
+        throw std::runtime_error ("Error: Could not reset perf event.");
     }
 }
 
