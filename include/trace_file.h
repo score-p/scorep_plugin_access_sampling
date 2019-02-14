@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 #include <sstream>
+#include <string_view>
 
 #include <trace_buffer.h>
 
@@ -50,5 +51,5 @@ class TraceFile
 
     private:
     std::fstream file_;
-    static constexpr const char *key_tag_ = "ATRACE";
+    static constexpr std::string_view tag_ = "ATRACE";
 };

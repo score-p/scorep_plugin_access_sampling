@@ -41,8 +41,8 @@ AccessSequence TraceFile::read ()
 
 void TraceFile::write_meta_data(const TraceMetaData & md)
 {
-    file_ << key_tag_;
-    file_.write((char *) &md, sizeof(md));
+    file_ << tag_;
+    file_.write((char *) &md, sizeof(TraceMetaData));
 }
 
 void TraceFile::write_raw_data(const void * data)
