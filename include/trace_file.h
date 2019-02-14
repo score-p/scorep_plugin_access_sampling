@@ -36,7 +36,7 @@ class TraceFile
         {}
 
         TraceMetaData(const EventBuffer &event_buffer)
-        :access_count(event_buffer.number_of_accesses)
+        :access_count(event_buffer.size())
         {
             std::stringstream ss;
             ss << event_buffer.tid;

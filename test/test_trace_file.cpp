@@ -45,9 +45,8 @@ TEST_CASE ("tracefile::simple")
     EventBuffer eb (2);
 
     eb.tid = std::this_thread::get_id ();
-    eb.data.push_back (ae1);
-    eb.data.push_back (ae2);
-    eb.number_of_accesses = 2;
+    eb.add(1, 0x1, 10, AccessType::STORE, MemoryLevel::MEM_LVL_L1);
+    eb.add(2, 0x2, 20, AccessType::LOAD, MemoryLevel::MEM_LVL_L2);
 
     {
         TraceFile tf ("./foo", TraceFileMode::WRITE);

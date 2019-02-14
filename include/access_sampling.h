@@ -52,7 +52,7 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
 
     auto event_type = accessTypeFromString(metric);
 
-    for(auto & event: thread_event_buffers_.at(tid)->data)
+    for(auto & event: *thread_event_buffers_.at(tid))
     {
         if(event_type == event.access_type)
         {
@@ -60,12 +60,12 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
         }
     }
 
-    auto buffer_size = thread_event_buffers_.at(tid)->data.size();
-    if(thread_event_buffers_.at(tid)->number_of_accesses > buffer_size)
+    auto buffer_size = thread_event_buffers_.at(tid)->size();
+    if(thread_event_buffers_.at(tid)->access_count() > buffer_size)
     {
         std::cerr << "Event buffer was too small and events are overwritten\n";
     }
 
-    std::cout << "Number of occured access events: " << thread_event_buffers_.at(tid)->number_of_accesses << '\n';
+    std::cout << "Number of occured access events: " << thread_event_buffers_.at(tid)->access_count() << '\n';
 
 }

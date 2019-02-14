@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/circular_buffer.hpp>
+#include <forward_list>
 #include <thread>
 
 extern "C"
@@ -11,6 +12,8 @@ extern "C"
 }
 
 using EventHeader = struct perf_event_header;
+using PointerSizePair = std::tuple<const char *, uint64_t>;
+
 constexpr std::size_t PERF_SAMPLE_MAX_SIZE = 64;
 
 struct SamplingEvent
@@ -103,11 +106,52 @@ std::ostream &operator<< (std::ostream &os, const AccessEvent &me);
 
 struct EventBuffer
 {
-    uint64_t number_of_accesses = 0;
-    std::thread::id tid;
-    boost::circular_buffer<AccessEvent> data;
 
-    explicit EventBuffer (std::size_t size) : data (size)
+    std::thread::id tid;
+
+    inline uint64_t access_count() const
     {
+        return number_of_accesses_;
     }
+
+    inline void add(uint64_t timestamp, uint64_t address, uint64_t instruction_pointer, AccessType type, MemoryLevel level)
+    {
+        number_of_accesses_++;
+        data_.push_back(AccessEvent(timestamp, address,instruction_pointer,type,level));
+    }
+
+    inline std::forward_list<PointerSizePair> data() const
+    {
+        std::forward_list<PointerSizePair> list;
+        if(data_.array_two().second > 0)
+        {
+            list.push_front(std::make_tuple(reinterpret_cast<const char *>(data_.array_two().first),
+                                            data_.array_two().second * sizeof(AccessEvent)));
+        }
+        list.push_front(std::make_tuple(reinterpret_cast<const char *>(data_.array_one().first),
+                                        data_.array_one().second * sizeof(AccessEvent)));
+        return list;
+    }
+
+    inline auto begin()
+    {
+        return data_.begin();
+    }
+
+    inline auto end()
+    {
+        return data_.end();
+    }
+
+    inline size_t size() const
+    {
+        return data_.size();
+    }
+
+    explicit EventBuffer (std::size_t size) : data_ (size)
+    {}
+
+    private:
+    boost::circular_buffer<AccessEvent> data_;
+    uint64_t number_of_accesses_ = 0;
 };
