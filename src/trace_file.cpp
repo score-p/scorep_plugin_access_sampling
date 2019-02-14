@@ -1,3 +1,5 @@
+#include <cstring>
+#include <iostream>
 #include <trace_file.h>
 
 static auto ios_open_mode (TraceFileMode mode)
@@ -30,7 +32,14 @@ void TraceFile::write (const EventBuffer &event_buffer)
 {
     TraceMetaData md(event_buffer);
     write_meta_data(md);
-    // write_raw_data(event_buffer);
+
+    auto array_range = event_buffer.data.array_one();
+    write_raw_data((char *)array_range.first,
+                   array_range.second * sizeof(AccessEvent));
+
+    array_range = event_buffer.data.array_two();
+    write_raw_data((char *)array_range.first,
+                    array_range.second * sizeof(AccessEvent));
 }
 
 AccessSequence TraceFile::read ()
@@ -45,9 +54,12 @@ void TraceFile::write_meta_data(const TraceMetaData & md)
     file_.write((char *) &md, sizeof(TraceMetaData));
 }
 
-void TraceFile::write_raw_data(const void * data)
+void TraceFile::write_raw_data(const char * data, size_t nbytes)
 {
-    // TODO implement
+    if (nbytes > 0)
+{
+        file_.write(data, nbytes);
+    }
 }
 
 void TraceFile::read_meta_data(TraceMetaData * md)

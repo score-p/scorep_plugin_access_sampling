@@ -45,7 +45,7 @@ class TraceFile
     };
 
     void write_meta_data (const TraceMetaData & md);
-    void write_raw_data (const void * data);
+    void write_raw_data (const char * data, size_t nbytes);
     void read_meta_data(TraceMetaData * md);
     void * read_raw_data(const TraceMetaData & md);
 
