@@ -44,8 +44,12 @@ void TraceFile::write (const EventBuffer &event_buffer)
 
 AccessSequence TraceFile::read ()
 {
-    // TODO implement
-    return AccessSequence ();
+    TraceMetaData md;
+    read_meta_data(&md);
+
+    AccessSequence as(md.access_count);
+    read_raw_data(reinterpret_cast<char *>(as.data()), sizeof(AccessEvent) * md.access_count);
+    return as;
 }
 
 void TraceFile::write_meta_data(const TraceMetaData & md)
@@ -57,7 +61,7 @@ void TraceFile::write_meta_data(const TraceMetaData & md)
 void TraceFile::write_raw_data(const char * data, size_t nbytes)
 {
     if (nbytes > 0)
-{
+    {
         file_.write(data, nbytes);
     }
 }
@@ -74,9 +78,8 @@ void TraceFile::read_meta_data(TraceMetaData * md)
     file_.read((char *) md, sizeof(TraceMetaData));
 }
 
-
-void * TraceFile::read_raw_data(const TraceMetaData & md)
+void TraceFile::read_raw_data(char * data, size_t nbytes)
 {
-    return nullptr;
+    file_.read(data, nbytes);
 }
 
