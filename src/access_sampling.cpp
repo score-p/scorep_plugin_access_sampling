@@ -1,4 +1,6 @@
 #include <access_sampling.h>
+#include <sstream>
+#include <trace_file.h>
 #include <utils.h>
 
 access_sampling::access_sampling () : perf_sampling_ (), pfm_wrapper_ ()
@@ -50,9 +52,33 @@ void access_sampling::start ()
     perf_sampling_.enable ();
 }
 
+inline void start_write_worker (const std::thread::id &tid, const EventBuffer &event_buffer)
+{
+    std::stringstream ss;
+    ss << "trace." << convert_thread_id (tid) << ".bin";
+    TraceFile f (ss.str (), TraceFileMode::WRITE);
+    f.write (event_buffer);
+}
+
 void access_sampling::stop ()
 {
+
+
     perf_sampling_.disable ();
+    std::vector<std::thread> workers;
+    auto trace_path = create_trace_directory ();
+
+    for (auto [tid, buffer] : thread_event_buffers_)
+    {
+        workers.push_back (std::thread (start_write_worker, std::ref (tid), std::ref (*buffer)));
+    }
+    for (auto &w : workers)
+    {
+        if (w.joinable ())
+        {
+            w.join ();
+        }
+    }
 }
 
 SCOREP_METRIC_PLUGIN_CLASS (access_sampling, "access_sampling")
