@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -79,8 +78,10 @@ boost::filesystem::path create_trace_directory ()
     }
     return parent_path;
 }
+
+std::size_t to_mb (std::size_t nbytes)
 {
-    assert(nbytes > 0);
+    assert (nbytes > 0);
     return nbytes / (1024 * 1024);
 }
 

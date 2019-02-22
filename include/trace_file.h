@@ -23,7 +23,7 @@ class TraceFile
     public:
     explicit TraceFile (const std::string &file, TraceFileMode mode);
     ~TraceFile ();
-    void write (const EventBuffer &event_buffer);
+    void write (const EventBuffer & event_buffer);
     AccessSequence read ();
 
     private:

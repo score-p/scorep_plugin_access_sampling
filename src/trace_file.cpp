@@ -28,7 +28,7 @@ TraceFile::~TraceFile ()
     file_.close();
 }
 
-void TraceFile::write (const EventBuffer &event_buffer)
+void TraceFile::write (const EventBuffer & event_buffer)
 {
     TraceMetaData md(event_buffer);
     write_meta_data(md);
