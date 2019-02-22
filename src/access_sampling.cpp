@@ -61,7 +61,8 @@ start_write_worker (const std::thread::id& tid, const EventBuffer& event_buffer,
 {
     std::stringstream ss;
     ss << "trace." << convert_thread_id (tid) << ".bin";
-    TraceFile f (ss.str (), TraceFileMode::WRITE);
+    trace_dir.append (ss.str ());
+    TraceFile f (trace_dir, TraceFileMode::WRITE);
     f.write (event_buffer);
 }
 
@@ -74,7 +75,7 @@ access_sampling::stop ()
 
     for (auto [tid, buffer] : thread_event_buffers_)
     {
-        workers.push_back (std::thread (start_write_worker, std::ref (tid), std::ref (*buffer)));
+        workers.push_back (std::thread (start_write_worker, tid, *buffer, trace_path));
     }
     for (auto& w : workers)
     {

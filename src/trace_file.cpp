@@ -18,7 +18,7 @@ ios_open_mode (TraceFileMode mode)
     }
 }
 
-TraceFile::TraceFile (const std::string& file, TraceFileMode mode)
+TraceFile::TraceFile (const FilePath& file, TraceFileMode mode)
 {
     auto ios_mode = ios_open_mode (mode);
     file_.open (file, ios_mode | std::ios::binary);

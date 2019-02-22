@@ -1,4 +1,5 @@
 #pragma once
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -9,6 +10,7 @@
 #include <trace_buffer.h>
 #include <utils.h>
 
+using FilePath = boost::filesystem::path;
 using AccessSequence = std::vector<AccessEvent>;
 
 enum class TraceFileMode
@@ -21,10 +23,13 @@ class TraceFile
 {
 
     public:
-    explicit TraceFile (const std::string& file, TraceFileMode mode);
+    explicit TraceFile (const FilePath& file, TraceFileMode mode);
+
     ~TraceFile ();
+
     void
     write (const EventBuffer& event_buffer);
+
     AccessSequence
     read ();
 
@@ -46,14 +51,17 @@ class TraceFile
 
     void
     write_meta_data (const TraceMetaData& md);
+
     void
     write_raw_data (const char* data, size_t nbytes);
+
     void
     read_meta_data (TraceMetaData* md);
+
     void
     read_raw_data (char* data, size_t nbytes);
 
     private:
-    std::fstream file_;
+    boost::filesystem::fstream file_;
     static constexpr std::string_view tag_ = "ATRACE";
 };
