@@ -1,5 +1,7 @@
 #include <cstdlib>
 #include <cassert>
+#include <cstdlib>
+#include <iostream>
 
 #include <utils.h>
 
@@ -47,7 +49,36 @@ std::size_t read_buffer_size ()
     return buffer_size;
 }
 
-std::size_t to_mb(std::size_t nbytes)
+inline boost::filesystem::path read_trace_path_from_env ()
+{
+    const char *path_string = std::getenv ("AS_TRACE_PATH");
+    if (path_string != nullptr)
+    {
+        return boost::filesystem::path{ path_string };
+    }
+    return boost::filesystem::current_path ();
+}
+
+boost::filesystem::path create_trace_directory ()
+{
+    namespace bf = boost::filesystem;
+    auto parent_path = read_trace_path_from_env ();
+
+    if (bf::exists (parent_path))
+    {
+        if (!bf::is_directory (parent_path))
+        {
+            std::cout << "Given trace path points not to a directory\n";
+            std::cout << "Store trace in " << bf::current_path () << '\n';
+            parent_path = bf::current_path ();
+        }
+    }
+    else
+    {
+        bf::create_directory (parent_path);
+    }
+    return parent_path;
+}
 {
     assert(nbytes > 0);
     return nbytes / (1024 * 1024);
