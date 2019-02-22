@@ -32,10 +32,10 @@ TEST_CASE ("tracefile::metadata::rw")
     }
     {
         TraceFile tf ("./foo", TraceFileMode::READ);
-        tf.read_meta_data(&md_read);
+        tf.read_meta_data (&md_read);
     }
-    REQUIRE(md_write.tid == md_read.tid);
-    REQUIRE(md_write.access_count == md_read.access_count);
+    REQUIRE (md_write.tid == md_read.tid);
+    REQUIRE (md_write.access_count == md_read.access_count);
 }
 
 TEST_CASE ("tracefile::simple")
@@ -45,8 +45,8 @@ TEST_CASE ("tracefile::simple")
     EventBuffer eb (2);
 
     eb.tid = std::this_thread::get_id ();
-    eb.add(1, 0x1, 10, AccessType::STORE, MemoryLevel::MEM_LVL_L1);
-    eb.add(2, 0x2, 20, AccessType::LOAD, MemoryLevel::MEM_LVL_L2);
+    eb.add (1, 0x1, 10, AccessType::STORE, MemoryLevel::MEM_LVL_L1);
+    eb.add (2, 0x2, 20, AccessType::LOAD, MemoryLevel::MEM_LVL_L2);
 
     {
         TraceFile tf ("./foo", TraceFileMode::WRITE);

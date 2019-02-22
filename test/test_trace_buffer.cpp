@@ -11,7 +11,7 @@ TEST_CASE ("trace_buffer::memoryLevelFromPerf")
 
     uint64_t t = event.data_src.val >> PERF_MEM_LVL_SHIFT;
     bool f = t & PERF_MEM_LVL_L1;
-    REQUIRE(f);
+    REQUIRE (f);
 
-    REQUIRE(memoryLevelFromPerf(event) == MemoryLevel::MEM_LVL_L1);
+    REQUIRE (memoryLevelFromPerf (event) == MemoryLevel::MEM_LVL_L1);
 }

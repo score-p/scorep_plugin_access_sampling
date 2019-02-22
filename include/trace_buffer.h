@@ -12,7 +12,7 @@ extern "C"
 }
 
 using EventHeader = struct perf_event_header;
-using PointerSizePair = std::tuple<const char *, uint64_t>;
+using PointerSizePair = std::tuple<const char*, uint64_t>;
 
 constexpr std::size_t PERF_SAMPLE_MAX_SIZE = 64;
 
@@ -34,15 +34,18 @@ struct PerfRingBuffer
     public:
     explicit PerfRingBuffer (int fd);
 
-    void *read ();
+    void*
+    read ();
 
     private:
-    inline void write_tail (uint64_t tail);
-    inline uint64_t read_head ();
+    inline void
+    write_tail (uint64_t tail);
+    inline uint64_t
+    read_head ();
 
     private:
     int moved_;
-    void *base_;
+    void* base_;
     int mask_;
     uint64_t prev_;
     char event_copy_[PERF_SAMPLE_MAX_SIZE] __attribute__ ((aligned (8)));
@@ -65,8 +68,10 @@ enum class AccessType : uint32_t
     NA = PERF_MEM_OP_NA,
 };
 
-AccessType accessTypeFromString (const std::string &type);
-AccessType accessTypeFromPerf (uint64_t mem_op);
+AccessType
+accessTypeFromString (const std::string& type);
+AccessType
+accessTypeFromPerf (uint64_t mem_op);
 
 enum class MemoryLevel : uint32_t
 {
@@ -86,7 +91,8 @@ enum class MemoryLevel : uint32_t
     MEM_LVL_UNC = PERF_MEM_LVL_UNC, //        Uncached memory
 };
 
-MemoryLevel memoryLevelFromPerf(const SamplingEvent & event);
+MemoryLevel
+memoryLevelFromPerf (const SamplingEvent& event);
 struct AccessEvent
 {
     AccessEvent ()
@@ -102,54 +108,62 @@ struct AccessEvent
     AccessType access_type = AccessType::NA; // 4 Byte
     MemoryLevel memory_level = MemoryLevel::MEM_LVL_NA; // 4 Byte
 };
-std::ostream &operator<< (std::ostream &os, const AccessEvent &me);
+std::ostream&
+operator<< (std::ostream& os, const AccessEvent& me);
 
 struct EventBuffer
 {
 
     std::thread::id tid;
 
-    inline uint64_t access_count() const
+    inline uint64_t
+    access_count () const
     {
         return number_of_accesses_;
     }
 
-    inline void add(uint64_t timestamp, uint64_t address, uint64_t instruction_pointer, AccessType type, MemoryLevel level)
+    inline void
+    add (uint64_t timestamp, uint64_t address, uint64_t instruction_pointer, AccessType type, MemoryLevel level)
     {
         number_of_accesses_++;
-        data_.push_back(AccessEvent(timestamp, address,instruction_pointer,type,level));
+        data_.push_back (AccessEvent (timestamp, address, instruction_pointer, type, level));
     }
 
-    inline std::forward_list<PointerSizePair> data() const
+    inline std::forward_list<PointerSizePair>
+    data () const
     {
         std::forward_list<PointerSizePair> list;
-        if(data_.array_two().second > 0)
+        if (data_.array_two ().second > 0)
         {
-            list.push_front(std::make_tuple(reinterpret_cast<const char *>(data_.array_two().first),
-                                            data_.array_two().second * sizeof(AccessEvent)));
+            list.push_front (std::make_tuple (reinterpret_cast<const char*> (data_.array_two ().first),
+                                              data_.array_two ().second * sizeof (AccessEvent)));
         }
-        list.push_front(std::make_tuple(reinterpret_cast<const char *>(data_.array_one().first),
-                                        data_.array_one().second * sizeof(AccessEvent)));
+        list.push_front (std::make_tuple (reinterpret_cast<const char*> (data_.array_one ().first),
+                                          data_.array_one ().second * sizeof (AccessEvent)));
         return list;
     }
 
-    inline auto begin()
+    inline auto
+    begin ()
     {
-        return data_.begin();
+        return data_.begin ();
     }
 
-    inline auto end()
+    inline auto
+    end ()
     {
-        return data_.end();
+        return data_.end ();
     }
 
-    inline size_t size() const
+    inline size_t
+    size () const
     {
-        return data_.size();
+        return data_.size ();
     }
 
     explicit EventBuffer (std::size_t size) : data_ (size)
-    {}
+    {
+    }
 
     private:
     boost::circular_buffer<AccessEvent> data_;

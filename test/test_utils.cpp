@@ -24,7 +24,7 @@ TEST_CASE ("utils::create_trace_directory")
     REQUIRE (bf::exists (path));
     REQUIRE (path == bf::current_path ());
 
-    const char *new_path = "/tmp/foobarbaz";
+    const char* new_path = "/tmp/foobarbaz";
     setenv ("AS_TRACE_PATH", new_path, true);
 
     path = create_trace_directory ();

@@ -18,27 +18,36 @@ extern "C"
 
 using EventBufferPtr = std::shared_ptr<EventBuffer>;
 using RingBufferMap = std::map<int, PerfRingBuffer>;
-using SignalHandlerFuncPtr = void (*) (int, siginfo_t *, void *);
+using SignalHandlerFuncPtr = void (*) (int, siginfo_t*, void*);
 
 class PerfSampling
 {
     public:
     PerfSampling ();
-    void event_open (PerfEventAttribute *attr);
-    void initialize_signal_handler ();
-    EventBufferPtr get_event_buffer ();
+    void
+    event_open (PerfEventAttribute* attr);
+    void
+    initialize_signal_handler ();
+    EventBufferPtr
+    get_event_buffer ();
 
-    void enable ();
+    void
+    enable ();
 
-    void disable ();
+    void
+    disable ();
 
     private:
-    static inline void process_events (PerfRingBuffer *ring_buffer);
-    static void signal_handler (int signal, siginfo_t *info, void *context);
+    static inline void
+    process_events (PerfRingBuffer* ring_buffer);
+    static void
+    signal_handler (int signal, siginfo_t* info, void* context);
 
-    static inline void enable (int fd);
+    static inline void
+    enable (int fd);
 
-    static inline void disable (int fd);
+    static inline void
+    disable (int fd);
 
     private:
     static thread_local RingBufferMap ring_buffers_;

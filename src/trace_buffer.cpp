@@ -4,7 +4,7 @@
 
 #define rmb() asm volatile("lfence" ::: "memory")
 #define mb() asm volatile("mfence" ::: "memory")
-#define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
+#define ACCESS_ONCE(x) (*(volatile typeof(x)*)&(x))
 
 PerfRingBuffer::PerfRingBuffer (int fd)
 {
@@ -19,17 +19,19 @@ PerfRingBuffer::PerfRingBuffer (int fd)
     }
 }
 
-uint64_t PerfRingBuffer::read_head ()
+uint64_t
+PerfRingBuffer::read_head ()
 {
-    struct perf_event_mmap_page *pc = static_cast<perf_event_mmap_page *> (base_);
+    struct perf_event_mmap_page* pc = static_cast<perf_event_mmap_page*> (base_);
     uint64_t head = ACCESS_ONCE (pc->data_head);
     rmb ();
     return head;
 }
 
-void PerfRingBuffer::write_tail (uint64_t tail)
+void
+PerfRingBuffer::write_tail (uint64_t tail)
 {
-    struct perf_event_mmap_page *pc = static_cast<perf_event_mmap_page *> (base_);
+    struct perf_event_mmap_page* pc = static_cast<perf_event_mmap_page*> (base_);
     /*
      * ensure all reads are done before we write the tail out.
      */
@@ -37,12 +39,13 @@ void PerfRingBuffer::write_tail (uint64_t tail)
     pc->data_tail = tail;
 }
 
-void *PerfRingBuffer::read ()
+void*
+PerfRingBuffer::read ()
 {
     uint64_t old = prev_;
 
-    unsigned char *data = static_cast<unsigned char *> (base_) + PAGE_SIZE;
-    void *event = nullptr;
+    unsigned char* data = static_cast<unsigned char*> (base_) + PAGE_SIZE;
+    void* event = nullptr;
 
     uint64_t head = read_head ();
 
@@ -50,14 +53,14 @@ void *PerfRingBuffer::read ()
     {
         size_t size;
 
-        event = reinterpret_cast<char *>(&data[old & mask_]);
-        size = static_cast<UnknownEvent *> (event)->header.size;
+        event = reinterpret_cast<char*> (&data[old & mask_]);
+        size = static_cast<UnknownEvent*> (event)->header.size;
 
         if ((old & mask_) + size != ((old + size) & mask_))
         {
             unsigned int offset = old;
             unsigned int len = size, nbytes_to_copy;
-            char *dst = event_copy_;
+            char* dst = event_copy_;
 
             do
             {
@@ -68,7 +71,7 @@ void *PerfRingBuffer::read ()
                 len -= nbytes_to_copy;
             } while (len);
 
-            event = static_cast<char *> (event_copy_);
+            event = static_cast<char*> (event_copy_);
         }
 
         old += size;
@@ -82,7 +85,8 @@ void *PerfRingBuffer::read ()
     return event;
 }
 
-std::ostream &operator<< (std::ostream &os, const AccessEvent &me)
+std::ostream&
+operator<< (std::ostream& os, const AccessEvent& me)
 {
     auto type = (me.access_type == AccessType::LOAD) ? "load" : "store";
     os << "Address " << std::hex << me.address << std::dec << ", Time " << me.time << ", IP "
@@ -90,21 +94,22 @@ std::ostream &operator<< (std::ostream &os, const AccessEvent &me)
     return os;
 }
 
-AccessType accessTypeFromString (const std::string &type)
+AccessType
+accessTypeFromString (const std::string& type)
 {
-    if (type.find("Load") != std::string::npos)
+    if (type.find ("Load") != std::string::npos)
     {
         return AccessType::LOAD;
     }
-    else if (type.find("Store") != std::string::npos)
+    else if (type.find ("Store") != std::string::npos)
     {
         return AccessType::STORE;
     }
-    else if (type.find("Prefetch") != std::string::npos)
+    else if (type.find ("Prefetch") != std::string::npos)
     {
         return AccessType::PREFETCH;
     }
-    else if (type.find("Exec") != std::string::npos)
+    else if (type.find ("Exec") != std::string::npos)
     {
         return AccessType::EXEC;
     }
@@ -112,12 +117,14 @@ AccessType accessTypeFromString (const std::string &type)
     return AccessType::NA;
 }
 
-AccessType accessTypeFromPerf (uint64_t mem_op)
+AccessType
+accessTypeFromPerf (uint64_t mem_op)
 {
-    return static_cast<AccessType>(mem_op);
+    return static_cast<AccessType> (mem_op);
 }
 
-MemoryLevel memoryLevelFromPerf(const SamplingEvent & event)
+MemoryLevel
+memoryLevelFromPerf (const SamplingEvent& event)
 {
-    return static_cast<MemoryLevel>(event.data_src.mem_lvl);
+    return static_cast<MemoryLevel> (event.data_src.mem_lvl);
 }

@@ -22,9 +22,11 @@ class PfmWrapper
     public:
     PfmWrapper ();
 
-    bool is_metric_supported (const std::string &metric_name);
+    bool
+    is_metric_supported (const std::string& metric_name);
 
-    void get_perf_event (const std::string &metric_name, uint64_t sample_period, PerfEventAttribute *perf_attr);
+    void
+    get_perf_event (const std::string& metric_name, uint64_t sample_period, PerfEventAttribute* perf_attr);
 
     private:
     std::map<std::string, std::string> supported_events_ = {

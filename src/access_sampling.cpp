@@ -1,4 +1,5 @@
 #include <access_sampling.h>
+#include <boost/filesystem.hpp>
 #include <sstream>
 #include <trace_file.h>
 #include <utils.h>
@@ -8,7 +9,8 @@ access_sampling::access_sampling () : perf_sampling_ (), pfm_wrapper_ ()
     std::cout << "Loading Metric Plugin\n";
 }
 
-std::vector<MetricProperty> access_sampling::get_metric_properties (const std::string &metric_name)
+std::vector<MetricProperty>
+access_sampling::get_metric_properties (const std::string& metric_name)
 {
     std::cout << "get metric properties called with: " << metric_name << '\n';
 
@@ -24,7 +26,8 @@ std::vector<MetricProperty> access_sampling::get_metric_properties (const std::s
     return metric_properties;
 }
 
-int32_t access_sampling::add_metric (const std::string &metric)
+int32_t
+access_sampling::add_metric (const std::string& metric)
 {
     auto [event, period] = parse_metric (metric);
     PerfEventAttribute perf_event_attr;
@@ -47,12 +50,14 @@ int32_t access_sampling::add_metric (const std::string &metric)
     return id;
 }
 
-void access_sampling::start ()
+void
+access_sampling::start ()
 {
     perf_sampling_.enable ();
 }
 
-inline void start_write_worker (const std::thread::id &tid, const EventBuffer &event_buffer)
+inline void
+start_write_worker (const std::thread::id& tid, const EventBuffer& event_buffer, boost::filesystem::path trace_dir)
 {
     std::stringstream ss;
     ss << "trace." << convert_thread_id (tid) << ".bin";
@@ -60,10 +65,9 @@ inline void start_write_worker (const std::thread::id &tid, const EventBuffer &e
     f.write (event_buffer);
 }
 
-void access_sampling::stop ()
+void
+access_sampling::stop ()
 {
-
-
     perf_sampling_.disable ();
     std::vector<std::thread> workers;
     auto trace_path = create_trace_directory ();
@@ -72,7 +76,7 @@ void access_sampling::stop ()
     {
         workers.push_back (std::thread (start_write_worker, std::ref (tid), std::ref (*buffer)));
     }
-    for (auto &w : workers)
+    for (auto& w : workers)
     {
         if (w.joinable ())
         {

@@ -2,7 +2,8 @@
 #include <iostream>
 #include <trace_file.h>
 
-static auto ios_open_mode (TraceFileMode mode)
+static auto
+ios_open_mode (TraceFileMode mode)
 {
     switch (mode)
     {
@@ -17,64 +18,69 @@ static auto ios_open_mode (TraceFileMode mode)
     }
 }
 
-TraceFile::TraceFile (const std::string &file, TraceFileMode mode)
+TraceFile::TraceFile (const std::string& file, TraceFileMode mode)
 {
-    auto ios_mode = ios_open_mode(mode);
-    file_.open(file, ios_mode | std::ios::binary);
+    auto ios_mode = ios_open_mode (mode);
+    file_.open (file, ios_mode | std::ios::binary);
 }
 
 TraceFile::~TraceFile ()
 {
-    file_.close();
+    file_.close ();
 }
 
-void TraceFile::write (const EventBuffer & event_buffer)
+void
+TraceFile::write (const EventBuffer& event_buffer)
 {
-    TraceMetaData md(event_buffer);
-    write_meta_data(md);
+    TraceMetaData md (event_buffer);
+    write_meta_data (md);
 
-    for(auto [pointer, size]: event_buffer.data())
+    for (auto [pointer, size] : event_buffer.data ())
     {
-        write_raw_data(pointer, size);
+        write_raw_data (pointer, size);
     }
 }
 
-AccessSequence TraceFile::read ()
+AccessSequence
+TraceFile::read ()
 {
     TraceMetaData md;
-    read_meta_data(&md);
+    read_meta_data (&md);
 
-    AccessSequence as(md.access_count);
+    AccessSequence as (md.access_count);
     // TODO meta_data as parameter
-    read_raw_data(reinterpret_cast<char *>(as.data()), sizeof(AccessEvent) * md.access_count);
+    read_raw_data (reinterpret_cast<char*> (as.data ()), sizeof (AccessEvent) * md.access_count);
     return as;
 }
 
-void TraceFile::write_meta_data(const TraceMetaData & md)
+void
+TraceFile::write_meta_data (const TraceMetaData& md)
 {
     file_ << tag_;
-    file_.write((char *) &md, sizeof(TraceMetaData));
+    file_.write ((char*)&md, sizeof (TraceMetaData));
 }
 
-void TraceFile::write_raw_data(const char * data, size_t nbytes)
+void
+TraceFile::write_raw_data (const char* data, size_t nbytes)
 {
-    file_.write(data, nbytes);
+    file_.write (data, nbytes);
 }
 
-void TraceFile::read_meta_data(TraceMetaData * md)
+void
+TraceFile::read_meta_data (TraceMetaData* md)
 {
-    constexpr std::size_t tag_len = tag_.size();
+    constexpr std::size_t tag_len = tag_.size ();
     char tag_buffer[tag_len];
-    file_.read(tag_buffer, sizeof(char) * tag_len);
-    if(tag_ != tag_buffer)
+    file_.read (tag_buffer, sizeof (char) * tag_len);
+    if (tag_ != tag_buffer)
     {
-        throw std::runtime_error("Trace does not contain the correct tag at the beginning.");
+        throw std::runtime_error ("Trace does not contain the correct tag at the beginning.");
     }
-    file_.read((char *) md, sizeof(TraceMetaData));
+    file_.read ((char*)md, sizeof (TraceMetaData));
 }
 
-void TraceFile::read_raw_data(char * data, size_t nbytes)
+void
+TraceFile::read_raw_data (char* data, size_t nbytes)
 {
-    file_.read(data, nbytes);
+    file_.read (data, nbytes);
 }
-

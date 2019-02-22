@@ -4,7 +4,8 @@
 
 #include <utils.h>
 
-std::string to_lower (const std::string &input_string)
+std::string
+to_lower (const std::string& input_string)
 {
     std::string lower ("");
     for (auto c : input_string)
@@ -14,7 +15,8 @@ std::string to_lower (const std::string &input_string)
     return lower;
 }
 
-std::vector<std::string> split (const std::string &s, char delimiter)
+std::vector<std::string>
+split (const std::string& s, char delimiter)
 {
     std::vector<std::string> tokens;
     std::string token;
@@ -26,7 +28,8 @@ std::vector<std::string> split (const std::string &s, char delimiter)
     return tokens;
 }
 
-std::tuple<std::string, unsigned int> parse_metric (const std::string &metric)
+std::tuple<std::string, unsigned int>
+parse_metric (const std::string& metric)
 {
     auto substrings = split (metric, '@');
     if (substrings.size () != 2)
@@ -36,10 +39,11 @@ std::tuple<std::string, unsigned int> parse_metric (const std::string &metric)
     return { substrings[0], std::stoul (substrings[1]) };
 }
 
-std::size_t read_buffer_size ()
+std::size_t
+read_buffer_size ()
 {
     std::size_t buffer_size = 5e6;
-    const char *size_string = std::getenv ("AS_SAMPLES_PER_THREAD");
+    const char* size_string = std::getenv ("AS_SAMPLES_PER_THREAD");
     if (size_string != nullptr)
     {
         std::stringstream sstream (size_string);
@@ -48,9 +52,10 @@ std::size_t read_buffer_size ()
     return buffer_size;
 }
 
-inline boost::filesystem::path read_trace_path_from_env ()
+inline boost::filesystem::path
+read_trace_path_from_env ()
 {
-    const char *path_string = std::getenv ("AS_TRACE_PATH");
+    const char* path_string = std::getenv ("AS_TRACE_PATH");
     if (path_string != nullptr)
     {
         return boost::filesystem::path{ path_string };
@@ -58,7 +63,8 @@ inline boost::filesystem::path read_trace_path_from_env ()
     return boost::filesystem::current_path ();
 }
 
-boost::filesystem::path create_trace_directory ()
+boost::filesystem::path
+create_trace_directory ()
 {
     namespace bf = boost::filesystem;
     auto parent_path = read_trace_path_from_env ();
@@ -79,13 +85,15 @@ boost::filesystem::path create_trace_directory ()
     return parent_path;
 }
 
-std::size_t to_mb (std::size_t nbytes)
+std::size_t
+to_mb (std::size_t nbytes)
 {
     assert (nbytes > 0);
     return nbytes / (1024 * 1024);
 }
 
-size_t convert_thread_id (std::thread::id tid)
+size_t
+convert_thread_id (std::thread::id tid)
 {
     std::stringstream ss;
     ss << tid;

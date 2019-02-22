@@ -14,40 +14,41 @@ PerfSampling::PerfSampling ()
 {
     std::size_t buffer_size = read_buffer_size ();
 
-    std::cout << "Esitmated memory consumption per thread " << to_mb(buffer_size * sizeof(AccessEvent)) << " MB\n";
+    std::cout << "Esitmated memory consumption per thread "
+              << to_mb (buffer_size * sizeof (AccessEvent)) << " MB\n";
 
     event_data_ = std::make_shared<EventBuffer> (EventBuffer (buffer_size));
 
     initialize_signal_handler ();
 }
 
-EventBufferPtr PerfSampling::get_event_buffer ()
+EventBufferPtr
+PerfSampling::get_event_buffer ()
 {
     return event_data_;
 }
 
-void PerfSampling::process_events (PerfRingBuffer *ring_buffer)
+void
+PerfSampling::process_events (PerfRingBuffer* ring_buffer)
 {
 
-    void *current_pointer = nullptr;
+    void* current_pointer = nullptr;
     while ((current_pointer = ring_buffer->read ()) != nullptr)
     {
-        UnknownEvent *current_event = static_cast<UnknownEvent *> (current_pointer);
+        UnknownEvent* current_event = static_cast<UnknownEvent*> (current_pointer);
 
         switch (current_event->header.type)
         {
         /* only process sampling events */
         case PERF_RECORD_SAMPLE:
         {
-            SamplingEvent *current_event = static_cast<SamplingEvent *> (current_pointer);
+            SamplingEvent* current_event = static_cast<SamplingEvent*> (current_pointer);
 
             if (current_event->addr != 0)
             {
-                event_data_->add(scorep::chrono::measurement_clock::now ().count (),
-                                 current_event->addr,
-                                 current_event->ip,
-                                 accessTypeFromPerf (current_event->data_src.mem_op),
-                                 memoryLevelFromPerf (*current_event));
+                event_data_->add (scorep::chrono::measurement_clock::now ().count (), current_event->addr,
+                                  current_event->ip, accessTypeFromPerf (current_event->data_src.mem_op),
+                                  memoryLevelFromPerf (*current_event));
                 continue;
             }
             break;
@@ -69,7 +70,8 @@ void PerfSampling::process_events (PerfRingBuffer *ring_buffer)
     }
 }
 
-void PerfSampling::signal_handler (int signal, siginfo_t *info, void *context)
+void
+PerfSampling::signal_handler (int signal, siginfo_t* info, void* context)
 {
     disable (info->si_fd);
     auto ring_buffer_iter = ring_buffers_.find (info->si_fd);
@@ -81,7 +83,8 @@ void PerfSampling::signal_handler (int signal, siginfo_t *info, void *context)
     enable (info->si_fd);
 }
 
-void PerfSampling::initialize_signal_handler ()
+void
+PerfSampling::initialize_signal_handler ()
 {
     struct sigaction action;
     std::memset (&action, 0, sizeof (struct sigaction));
@@ -94,7 +97,8 @@ void PerfSampling::initialize_signal_handler ()
     }
 }
 
-void PerfSampling::event_open (PerfEventAttribute *attr)
+void
+PerfSampling::event_open (PerfEventAttribute* attr)
 {
     int fd = syscall (__NR_perf_event_open, attr, 0, -1, -1, 0);
     if (fd < 1)
@@ -126,15 +130,16 @@ void PerfSampling::event_open (PerfEventAttribute *attr)
     {
         throw std::runtime_error ("Error: Unable to create a signal on the fd.");
     }
-    if (ioctl(fd, PERF_EVENT_IOC_RESET, 0) < 0)
+    if (ioctl (fd, PERF_EVENT_IOC_RESET, 0) < 0)
     {
         throw std::runtime_error ("Error: Could not reset perf event.");
     }
 }
 
-void PerfSampling::enable ()
+void
+PerfSampling::enable ()
 {
-    for (auto &[fd, dummy] : ring_buffers_)
+    for (auto& [fd, dummy] : ring_buffers_)
     {
         if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
         {
@@ -143,13 +148,14 @@ void PerfSampling::enable ()
     }
 }
 
-void PerfSampling::disable ()
+void
+PerfSampling::disable ()
 {
     sigset_t blocksig;
     sigemptyset (&blocksig);
     sigaddset (&blocksig, SIGPROF);
     sigprocmask (SIG_BLOCK, &blocksig, NULL);
-    for (auto &[fd, dummy] : ring_buffers_)
+    for (auto& [fd, dummy] : ring_buffers_)
     {
         if (ioctl (fd, PERF_EVENT_IOC_DISABLE) < 0)
         {
@@ -158,7 +164,8 @@ void PerfSampling::disable ()
     }
 }
 
-void PerfSampling::enable (int fd)
+void
+PerfSampling::enable (int fd)
 {
     if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
     {
@@ -166,7 +173,8 @@ void PerfSampling::enable (int fd)
     }
 }
 
-void PerfSampling::disable (int fd)
+void
+PerfSampling::disable (int fd)
 {
     if (ioctl (fd, PERF_EVENT_IOC_DISABLE) < 0)
     {
