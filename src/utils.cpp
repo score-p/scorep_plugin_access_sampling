@@ -52,3 +52,10 @@ std::size_t to_mb(std::size_t nbytes)
     assert(nbytes > 0);
     return nbytes / (1024 * 1024);
 }
+
+size_t convert_thread_id (std::thread::id tid)
+{
+    std::stringstream ss;
+    ss << tid;
+    return std::stoull (ss.str ());
+}

@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include <trace_buffer.h>
+#include <utils.h>
 
 using AccessSequence = std::vector<AccessEvent>;
 
@@ -36,12 +37,9 @@ class TraceFile
         {}
 
         TraceMetaData(const EventBuffer &event_buffer)
-        :access_count(event_buffer.size())
-        {
-            std::stringstream ss;
-            ss << event_buffer.tid;
-            tid = std::stoull(ss.str());
-        }
+        :access_count(event_buffer.size()),
+         tid(convert_thread_id(event_buffer.tid))
+        {}
     };
 
     void write_meta_data (const TraceMetaData & md);
