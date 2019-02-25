@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstring>
+#include <stdexcept>
 #include <trace_buffer.h>
 
 #define rmb() asm volatile("lfence" ::: "memory")

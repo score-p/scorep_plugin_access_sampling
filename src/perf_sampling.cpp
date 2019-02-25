@@ -71,7 +71,7 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
 }
 
 void
-PerfSampling::signal_handler (int signal, siginfo_t* info, void* context)
+PerfSampling::signal_handler ([[maybe_unused]] int signal, siginfo_t* info, [[maybe_unused]] void* context)
 {
     disable (info->si_fd);
     auto ring_buffer_iter = ring_buffers_.find (info->si_fd);

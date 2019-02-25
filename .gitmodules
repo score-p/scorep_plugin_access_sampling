@@ -4,3 +4,6 @@
 [submodule "scorep_plugin_common"]
 	path = scorep_plugin_common
 	url = https://github.com/score-p/scorep_plugin_common
+[submodule "tracefile"]
+	path = tracefile
+	url = git@gitlab.hrz.tu-chemnitz.de:cherold--tu-dresden.de/tracefile.git
