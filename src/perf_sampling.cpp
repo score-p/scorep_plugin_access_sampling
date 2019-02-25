@@ -48,7 +48,7 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
             {
                 event_data_->add (scorep::chrono::measurement_clock::now ().count (), current_event->addr,
                                   current_event->ip, accessTypeFromPerf (current_event->data_src.mem_op),
-                                  memoryLevelFromPerf (*current_event));
+                                  memoryLevelFromPerf (current_event->data_src.mem_lvl));
                 continue;
             }
             break;

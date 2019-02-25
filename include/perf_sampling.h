@@ -15,6 +15,7 @@ extern "C"
 
 #include <pfm_wrapper.h>
 #include <trace_buffer.h>
+#include <trace_events.h>
 
 using EventBufferPtr = std::shared_ptr<EventBuffer>;
 using RingBufferMap = std::map<int, PerfRingBuffer>;
