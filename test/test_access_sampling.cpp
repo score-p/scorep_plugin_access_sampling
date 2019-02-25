@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
 #include <boost/filesystem.hpp>
 #include <catch.hpp>
-#include <trace_buffer.h>
+#include <ring_buffer.h>
 #include <trace_file.h>
 #include <utils.h>
 #define private public
