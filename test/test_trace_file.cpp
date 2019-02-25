@@ -18,28 +18,32 @@ TEST_CASE ("tracefile::create")
     }
     bf::path p{ "./foo" };
     REQUIRE (bf::is_regular_file (p));
+    REQUIRE (bf::remove (p));
 }
 
 TEST_CASE ("tracefile::metadata::rw")
 {
+    const char* p = "./foo";
     TraceFile::TraceMetaData md_read;
     TraceFile::TraceMetaData md_write;
     md_write.access_count = 42;
     md_write.tid = 1337;
     {
-        TraceFile tf ("./foo", TraceFileMode::WRITE);
+        TraceFile tf (p, TraceFileMode::WRITE);
         tf.write_meta_data (md_write);
     }
     {
-        TraceFile tf ("./foo", TraceFileMode::READ);
+        TraceFile tf (p, TraceFileMode::READ);
         tf.read_meta_data (&md_read);
     }
     REQUIRE (md_write.tid == md_read.tid);
     REQUIRE (md_write.access_count == md_read.access_count);
+    REQUIRE (bf::remove (p));
 }
 
 TEST_CASE ("tracefile::simple")
 {
+    const char* p = "./foo";
     AccessEvent ae1 (1, 0x1, 10, AccessType::STORE, MemoryLevel::MEM_LVL_L1);
     AccessEvent ae2 (2, 0x2, 20, AccessType::LOAD, MemoryLevel::MEM_LVL_L2);
     EventBuffer eb (2);
@@ -49,11 +53,11 @@ TEST_CASE ("tracefile::simple")
     eb.add (2, 0x2, 20, AccessType::LOAD, MemoryLevel::MEM_LVL_L2);
 
     {
-        TraceFile tf ("./foo", TraceFileMode::WRITE);
+        TraceFile tf (p, TraceFileMode::WRITE);
         tf.write (eb);
     }
 
-    TraceFile tf ("./foo", TraceFileMode::READ);
+    TraceFile tf (p, TraceFileMode::READ);
     auto result = tf.read ();
 
     REQUIRE (result.size () == 2);
@@ -69,4 +73,6 @@ TEST_CASE ("tracefile::simple")
     REQUIRE (result[1].ip == ae2.ip);
     REQUIRE (result[1].access_type == ae2.access_type);
     REQUIRE (result[1].memory_level == ae2.memory_level);
+
+    REQUIRE (bf::remove (p));
 }

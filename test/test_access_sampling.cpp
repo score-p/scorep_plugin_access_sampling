@@ -73,4 +73,7 @@ TEST_CASE ("access_sampling::stop")
     REQUIRE (a2[0] == ta);
     ta = AccessEvent (11, 101, 1001, AccessType::STORE, MemoryLevel::MEM_LVL_LOC_RAM);
     REQUIRE (a2[1] == ta);
+
+    REQUIRE (bf::remove (t1));
+    REQUIRE (bf::remove (t2));
 }
