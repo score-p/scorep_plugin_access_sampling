@@ -16,22 +16,28 @@ using namespace scorep::plugin::policy;
 using ThreadId = std::thread::id;
 using TimeValuePair = std::pair<scorep::chrono::ticks, double>;
 using MetricProperty = scorep::plugin::metric_property;
-using ThreadEventPair = std::tuple<ThreadId,std::string>;
+using ThreadEventPair = std::tuple<ThreadId, std::string>;
 
 class access_sampling : public scorep::plugin::base<access_sampling, async, post_mortem, per_thread, scorep_clock>
 {
     public:
     access_sampling ();
 
-    std::vector<MetricProperty> get_metric_properties (const std::string &metric_name);
+    std::vector<MetricProperty>
+    get_metric_properties (const std::string& metric_name);
 
-    int32_t add_metric (const std::string &event);
+    int32_t
+    add_metric (const std::string& event);
 
-    void start ();
+    void
+    start ();
 
-    void stop ();
+    void
+    stop ();
 
-    template <typename CursorType> void get_all_values (int32_t id, CursorType &cursor);
+    template <typename CursorType>
+    void
+    get_all_values (int32_t id, CursorType& cursor);
 
     private:
     PerfSampling perf_sampling_;
@@ -41,7 +47,9 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     std::vector<ThreadEventPair> all_events_;
 };
 
-template <typename CursorType> void access_sampling::get_all_values (int32_t id, CursorType &cursor)
+template <typename CursorType>
+void
+access_sampling::get_all_values (int32_t id, CursorType& cursor)
 {
     auto & [tid, metric] = all_events_[id];
     std::cout << "Record " << metric << " metric on thread " << tid << '\n';
@@ -67,5 +75,4 @@ template <typename CursorType> void access_sampling::get_all_values (int32_t id,
     }
 
     std::cout << "Number of occured access events: " << thread_event_buffers_.at(tid)->access_count() << '\n';
-
 }

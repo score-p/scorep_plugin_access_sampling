@@ -5,3 +5,4 @@ src/scorep_sampling_signal_memory_access.c
 src/perf_util.h
 src/perf_util.c
 .ccls-cache
+env.mods
