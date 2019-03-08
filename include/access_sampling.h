@@ -45,6 +45,8 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     std::mutex buffer_mutex_;
     std::map<ThreadId, EventBufferPtr> thread_event_buffers_;
     std::vector<ThreadEventPair> all_events_;
+
+    std::size_t buffer_size_ = 0;
 };
 
 template <typename CursorType>

@@ -7,6 +7,10 @@
 access_sampling::access_sampling () : perf_sampling_ (), pfm_wrapper_ ()
 {
     std::cout << "Loading Metric Plugin\n";
+
+    buffer_size_ = read_buffer_size ();
+    std::cout << "Esitmated memory consumption per thread "
+              << to_mb (buffer_size_ * sizeof (AccessEvent)) << " MB\n";
 }
 
 std::vector<MetricProperty>
@@ -36,17 +40,21 @@ access_sampling::add_metric (const std::string& metric)
     perf_sampling_.event_open (&perf_event_attr);
 
     buffer_mutex_.lock ();
+
     auto tid = std::this_thread::get_id ();
     auto buffer_iter = thread_event_buffers_.find (tid);
     if (buffer_iter == thread_event_buffers_.end ())
     {
-        thread_event_buffers_[tid] = perf_sampling_.get_event_buffer ();
+        thread_event_buffers_[tid] = std::make_shared<EventBuffer> (buffer_size_);
+        perf_sampling_.set_event_buffer (thread_event_buffers_[tid]);
     }
 
     int32_t id = all_events_.size ();
     all_events_.push_back (std::make_tuple (tid, event));
+
     buffer_mutex_.unlock ();
 
+    perf_sampling_.event_open (&perf_event_attr);
     return id;
 }
 

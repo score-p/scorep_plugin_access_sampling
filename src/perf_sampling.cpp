@@ -10,22 +10,15 @@
 thread_local RingBufferMap PerfSampling::ring_buffers_;
 thread_local EventBufferPtr PerfSampling::event_data_;
 
-PerfSampling::PerfSampling ()
+void
+PerfSampling::set_event_buffer (EventBufferPtr event_buffer)
 {
-    std::size_t buffer_size = read_buffer_size ();
-
-    std::cout << "Esitmated memory consumption per thread "
-              << to_mb (buffer_size * sizeof (AccessEvent)) << " MB\n";
-
-    event_data_ = std::make_shared<EventBuffer> (EventBuffer (buffer_size));
-
-    initialize_signal_handler ();
+    event_data_ = event_buffer;
 }
 
-EventBufferPtr
-PerfSampling::get_event_buffer ()
+PerfSampling::PerfSampling ()
 {
-    return event_data_;
+    initialize_signal_handler ();
 }
 
 void

@@ -25,18 +25,21 @@ class PerfSampling
 {
     public:
     PerfSampling ();
+
     void
     event_open (PerfEventAttribute* attr);
+
     void
     initialize_signal_handler ();
-    EventBufferPtr
-    get_event_buffer ();
 
     void
     enable ();
 
     void
     disable ();
+
+    void
+    set_event_buffer (EventBufferPtr event_buffer);
 
     private:
     static inline void
