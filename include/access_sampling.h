@@ -53,6 +53,13 @@ access_sampling::get_all_values (int32_t id, CursorType& cursor)
 {
     auto & [tid, metric] = all_events_[id];
     std::cout << "Record " << metric << " metric on thread " << tid << '\n';
+
+    if(!thread_event_buffers_.at(tid).get())
+    {
+        std::cerr << "Invalid thread buffer of TID " << tid << '\n';
+        return;
+    }
+
     if(tid != thread_event_buffers_[tid]->tid)
     {
         throw std::runtime_error("Something went wrong in signal handler");
