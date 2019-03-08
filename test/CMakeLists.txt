@@ -20,5 +20,6 @@ add_executable(test_access_sampling test_access_sampling.cpp
                "${PROJECT_SOURCE_DIR}/src/ring_buffer.cpp"
                "${PROJECT_SOURCE_DIR}/src/utils.cpp")
 target_include_directories(test_access_sampling PRIVATE "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(test_access_sampling PRIVATE "${PROJECT_SOURCE_DIR}/tracefile/include")
 target_include_directories(test_access_sampling PRIVATE "${PROJECT_SOURCE_DIR}/lib/catch2")
 target_link_libraries(test_access_sampling PRIVATE Scorep::scorep-plugin-cxx trace_file boost_filesystem boost_system pthread pfm)
