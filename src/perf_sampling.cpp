@@ -134,10 +134,7 @@ PerfSampling::enable ()
 {
     for (auto& [fd, dummy] : ring_buffers_)
     {
-        if (ioctl (fd, PERF_EVENT_IOC_ENABLE) < 0)
-        {
-            throw std::runtime_error ("Error: Could not enable perf.");
-        }
+        enable (fd);
     }
 }
 
@@ -148,13 +145,6 @@ PerfSampling::disable ()
     sigemptyset (&blocksig);
     sigaddset (&blocksig, SIGPROF);
     sigprocmask (SIG_BLOCK, &blocksig, NULL);
-    for (auto& [fd, dummy] : ring_buffers_)
-    {
-        if (ioctl (fd, PERF_EVENT_IOC_DISABLE) < 0)
-        {
-            throw std::runtime_error ("Error: Could not disable perf.");
-        }
-    }
 }
 
 void

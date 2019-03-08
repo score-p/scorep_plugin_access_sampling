@@ -37,8 +37,6 @@ access_sampling::add_metric (const std::string& metric)
     PerfEventAttribute perf_event_attr;
     pfm_wrapper_.get_perf_event (event, period, &perf_event_attr);
 
-    perf_sampling_.event_open (&perf_event_attr);
-
     buffer_mutex_.lock ();
 
     auto tid = std::this_thread::get_id ();
@@ -55,16 +53,18 @@ access_sampling::add_metric (const std::string& metric)
     buffer_mutex_.unlock ();
 
     perf_sampling_.event_open (&perf_event_attr);
+
+    perf_sampling_.enable ();
+
     return id;
 }
 
 void
 access_sampling::start ()
 {
-    perf_sampling_.enable ();
 }
 
-inline void
+void
 start_write_worker (const std::thread::id& tid, const EventBuffer& event_buffer, boost::filesystem::path trace_dir)
 {
     std::stringstream ss;
