@@ -25,7 +25,6 @@ operator== (const AccessEvent& a1, const AccessEvent& a2)
            a1.ip == a2.ip && a1.memory_level == a2.memory_level;
 }
 
-#include <cstdio>
 TEST_CASE ("access_sampling::stop")
 {
     ThreadId id1 (1000);
