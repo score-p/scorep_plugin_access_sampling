@@ -28,20 +28,20 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
     void* current_pointer = nullptr;
     while ((current_pointer = ring_buffer->read ()) != nullptr)
     {
-        UnknownEvent* current_event = static_cast<UnknownEvent*> (current_pointer);
+        UnknownEvent* event = static_cast<UnknownEvent*> (current_pointer);
 
-        switch (current_event->header.type)
+        switch (event->header.type)
         {
         /* only process sampling events */
         case PERF_RECORD_SAMPLE:
         {
-            SamplingEvent* current_event = static_cast<SamplingEvent*> (current_pointer);
+            SamplingEvent* access_event = static_cast<SamplingEvent*> (current_pointer);
 
-            if (current_event->addr != 0)
+            if (access_event->addr != 0)
             {
-                event_data_->add (scorep::chrono::measurement_clock::now ().count (), current_event->addr,
-                                  current_event->ip, accessTypeFromPerf (current_event->data_src.mem_op),
-                                  memoryLevelFromPerf (current_event->data_src.mem_lvl));
+                event_data_->add (scorep::chrono::measurement_clock::now ().count (), access_event->addr,
+                                  access_event->ip, accessTypeFromPerf (access_event->data_src.mem_op),
+                                  memoryLevelFromPerf (access_event->data_src.mem_lvl));
                 continue;
             }
             break;
@@ -57,7 +57,7 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
             break;
         }
         default:
-            std::cerr << "Unknown record type: " << current_event->header.type << '\n';
+            std::cerr << "Unknown record type: " << event->header.type << '\n';
             break;
         }
     }

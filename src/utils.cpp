@@ -7,12 +7,10 @@
 std::string
 to_lower (const std::string& input_string)
 {
-    std::string lower ("");
-    for (auto c : input_string)
-    {
-        lower.push_back (std::tolower (c));
-    }
-    return lower;
+    std::string output;
+    std::transform (input_string.begin (), input_string.end (), std::back_inserter (output),
+                    [](unsigned char c) { return std::tolower (c); });
+    return output;
 }
 
 std::vector<std::string>

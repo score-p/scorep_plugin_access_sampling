@@ -114,5 +114,5 @@ TEST_CASE ("Integration")
         REQUIRE (bf::remove (trace));
     }
 
-    std::cout << "Tested with " << nthreads << "threads.\n";
+    std::cout << "Tested with " << nthreads << " threads.\n";
 }

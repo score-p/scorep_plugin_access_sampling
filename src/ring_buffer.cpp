@@ -60,12 +60,12 @@ PerfRingBuffer::read ()
         if ((old & mask_) + size != ((old + size) & mask_))
         {
             unsigned int offset = old;
-            unsigned int len = size, nbytes_to_copy;
+            unsigned int len = size;
             char* dst = event_copy_;
 
             do
             {
-                nbytes_to_copy = std::min<std::size_t> (mask_ + 1 - (offset & mask_), len);
+                unsigned int nbytes_to_copy = std::min<std::size_t> (mask_ + 1 - (offset & mask_), len);
                 std::memcpy (dst, &data[offset & mask_], nbytes_to_copy);
                 offset += nbytes_to_copy;
                 dst += nbytes_to_copy;
