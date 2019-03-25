@@ -27,7 +27,7 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     get_metric_properties (const std::string& metric_name);
 
     int32_t
-    add_metric (const std::string& event);
+    add_metric (const std::string& metric);
 
     void
     start ();

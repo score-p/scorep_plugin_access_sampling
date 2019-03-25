@@ -4,7 +4,7 @@
 #include <trace_file.h>
 #include <utils.h>
 
-access_sampling::access_sampling () : perf_sampling_ (), pfm_wrapper_ ()
+access_sampling::access_sampling ()
 {
     std::cout << "Loading Metric Plugin\n";
 

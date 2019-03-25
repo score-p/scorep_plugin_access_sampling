@@ -28,14 +28,14 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
     void* current_pointer = nullptr;
     while ((current_pointer = ring_buffer->read ()) != nullptr)
     {
-        UnknownEvent* event = static_cast<UnknownEvent*> (current_pointer);
+        auto* event = static_cast<UnknownEvent*> (current_pointer);
 
         switch (event->header.type)
         {
         /* only process sampling events */
         case PERF_RECORD_SAMPLE:
         {
-            SamplingEvent* access_event = static_cast<SamplingEvent*> (current_pointer);
+            auto* access_event = static_cast<SamplingEvent*> (current_pointer);
 
             if (access_event->addr != 0)
             {
@@ -144,7 +144,7 @@ PerfSampling::disable ()
     sigset_t blocksig;
     sigemptyset (&blocksig);
     sigaddset (&blocksig, SIGPROF);
-    sigprocmask (SIG_BLOCK, &blocksig, NULL);
+    sigprocmask (SIG_BLOCK, &blocksig, nullptr);
 }
 
 void

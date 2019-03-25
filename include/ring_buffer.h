@@ -26,10 +26,17 @@ struct UnknownEvent
     EventHeader header;
 };
 
-struct PerfRingBuffer
+class PerfRingBuffer
 {
     public:
     explicit PerfRingBuffer (int fd);
+    ~PerfRingBuffer () = default;
+    PerfRingBuffer (const PerfRingBuffer& other) = delete;
+
+    PerfRingBuffer&
+    operator= (const PerfRingBuffer&) = delete;
+
+    PerfRingBuffer (PerfRingBuffer&& other) = default;
 
     void*
     read ();

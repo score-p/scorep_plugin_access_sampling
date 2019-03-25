@@ -12,7 +12,7 @@ PerfRingBuffer::PerfRingBuffer (int fd)
     moved_ = 0;
     mask_ = BUFFERSIZE_DEFAULT * PAGE_SIZE - 1;
 
-    base_ = mmap (NULL, (BUFFERSIZE_DEFAULT + 1) * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    base_ = mmap (nullptr, (BUFFERSIZE_DEFAULT + 1) * PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
     if (base_ == MAP_FAILED || base_ == nullptr)
     {
@@ -23,7 +23,7 @@ PerfRingBuffer::PerfRingBuffer (int fd)
 uint64_t
 PerfRingBuffer::read_head ()
 {
-    struct perf_event_mmap_page* pc = static_cast<perf_event_mmap_page*> (base_);
+    auto* pc = static_cast<perf_event_mmap_page*> (base_);
     uint64_t head = ACCESS_ONCE (pc->data_head);
     rmb ();
     return head;
@@ -32,7 +32,7 @@ PerfRingBuffer::read_head ()
 void
 PerfRingBuffer::write_tail (uint64_t tail)
 {
-    struct perf_event_mmap_page* pc = static_cast<perf_event_mmap_page*> (base_);
+    auto* pc = static_cast<perf_event_mmap_page*> (base_);
     /*
      * ensure all reads are done before we write the tail out.
      */
