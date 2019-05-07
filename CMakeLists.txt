@@ -27,4 +27,4 @@ target_include_directories(access_sampling PRIVATE tracefile/include)
 
 target_compile_options(access_sampling INTERFACE -Wall -pedantic -Wextra)
 
-target_link_libraries(access_sampling PRIVATE Scorep::scorep-plugin-cxx trace_file boost_filesystem)
+target_link_libraries(access_sampling PRIVATE Scorep::scorep-plugin-cxx boost_filesystem)

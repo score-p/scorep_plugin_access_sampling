@@ -62,11 +62,6 @@ access_sampling::get_all_values (int32_t id, CursorType& cursor)
         return;
     }
 
-    if(tid != thread_event_buffers_[tid]->tid)
-    {
-        throw std::runtime_error("Something went wrong in signal handler");
-    }
-
     auto event_type = accessTypeFromString(metric);
 
     for(auto & event: *thread_event_buffers_.at(tid))

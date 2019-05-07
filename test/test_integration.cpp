@@ -102,7 +102,7 @@ TEST_CASE ("Integration")
         REQUIRE (bf::exists (trace));
         TraceFile tf (trace, TraceFileMode::READ);
 
-        auto access_sequence = tf.read ();
+        auto access_sequence = tf.read<std::vector<AccessEvent>> ();
         REQUIRE (access_sequence.size () > 0);
         for (auto& access : access_sequence)
         {

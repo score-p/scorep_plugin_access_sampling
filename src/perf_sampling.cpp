@@ -39,9 +39,13 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
 
             if (access_event->addr != 0)
             {
-                event_data_->add (scorep::chrono::measurement_clock::now ().count (), access_event->addr,
-                                  access_event->ip, accessTypeFromPerf (access_event->data_src.mem_op),
+                AccessEvent event(scorep::chrono::measurement_clock::now ().count (),
+                                  access_event->addr,
+                                  access_event->ip,
+                                  accessTypeFromPerf (access_event->data_src.mem_op),
                                   memoryLevelFromPerf (access_event->data_src.mem_lvl));
+
+                event_data_->append(event);
                 continue;
             }
             break;
@@ -72,7 +76,6 @@ PerfSampling::signal_handler ([[maybe_unused]] int signal, siginfo_t* info, [[ma
     {
         process_events (&ring_buffer_iter->second);
     }
-    event_data_->tid = std::this_thread::get_id ();
     enable (info->si_fd);
 }
 

@@ -30,17 +30,17 @@ TEST_CASE ("access_sampling::stop")
     ThreadId id1 (1000);
     ThreadId id2 (400000000);
 
-    EventBufferPtr p1 = std::make_shared<EventBuffer> (EventBuffer (1024));
-    EventBufferPtr p2 = std::make_shared<EventBuffer> (EventBuffer (1024));
+    auto p1 = std::make_shared<EventRingBuffer> (1024);
+    auto p2 = std::make_shared<EventRingBuffer> (1024);
+    auto a1 = AccessEvent (1, 10, 100, AccessType::LOAD, MemoryLevel::MEM_LVL_L1);
+    auto a2 = AccessEvent (2, 11, 101, AccessType::STORE, MemoryLevel::MEM_LVL_L2);
+    auto a3 = AccessEvent (10, 100, 1000, AccessType::LOAD, MemoryLevel::MEM_LVL_L3);
+    auto a4 = AccessEvent (11, 101, 1001, AccessType::STORE, MemoryLevel::MEM_LVL_LOC_RAM);
 
-    p1->tid = id1;
-    p1->add (1, 10, 100, AccessType::LOAD, MemoryLevel::MEM_LVL_L1);
-    p1->add (2, 11, 101, AccessType::STORE, MemoryLevel::MEM_LVL_L2);
-
-    p2->tid = id2;
-    p2->add (10, 100, 1000, AccessType::LOAD, MemoryLevel::MEM_LVL_L3);
-    p2->add (11, 101, 1001, AccessType::STORE, MemoryLevel::MEM_LVL_LOC_RAM);
-
+    p1->append (a1);
+    p1->append (a2);
+    p2->append (a3);
+    p2->append (a4);
     {
         access_sampling as;
         as.thread_event_buffers_[id1] = p1;
@@ -57,21 +57,16 @@ TEST_CASE ("access_sampling::stop")
     TraceFile tf1 (t1, TraceFileMode::READ);
     TraceFile tf2 (t2, TraceFileMode::READ);
 
-    auto a1 = tf1.read ();
-    auto a2 = tf2.read ();
+    auto event_buffer1 = tf1.read<std::vector<AccessEvent>> ();
+    auto event_buffer2 = tf2.read<std::vector<AccessEvent>> ();
 
-    REQUIRE (a1.size () == 2);
-    REQUIRE (a2.size () == 2);
+    REQUIRE (event_buffer1.size () == 2);
+    REQUIRE (event_buffer2.size () == 2);
 
-    auto ta = AccessEvent (1, 10, 100, AccessType::LOAD, MemoryLevel::MEM_LVL_L1);
-    REQUIRE (a1[0] == ta);
-    ta = AccessEvent (2, 11, 101, AccessType::STORE, MemoryLevel::MEM_LVL_L2);
-    REQUIRE (a1[1] == ta);
-
-    ta = AccessEvent (10, 100, 1000, AccessType::LOAD, MemoryLevel::MEM_LVL_L3);
-    REQUIRE (a2[0] == ta);
-    ta = AccessEvent (11, 101, 1001, AccessType::STORE, MemoryLevel::MEM_LVL_LOC_RAM);
-    REQUIRE (a2[1] == ta);
+    REQUIRE (event_buffer1[0] == a1);
+    REQUIRE (event_buffer1[1] == a2);
+    REQUIRE (event_buffer2[0] == a3);
+    REQUIRE (event_buffer2[1] == a4);
 
     REQUIRE (bf::remove (t1));
     REQUIRE (bf::remove (t2));

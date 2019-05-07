@@ -17,7 +17,7 @@ extern "C"
 #include <ring_buffer.h>
 #include <trace_events.h>
 
-using EventBufferPtr = std::shared_ptr<EventBuffer>;
+using EventBufferPtr = std::shared_ptr<EventRingBuffer>;
 using RingBufferMap = std::map<int, PerfRingBuffer>;
 using SignalHandlerFuncPtr = void (*) (int, siginfo_t*, void*);
 

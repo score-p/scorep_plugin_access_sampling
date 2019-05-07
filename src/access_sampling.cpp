@@ -43,7 +43,7 @@ access_sampling::add_metric (const std::string& metric)
     auto buffer_iter = thread_event_buffers_.find (tid);
     if (buffer_iter == thread_event_buffers_.end ())
     {
-        thread_event_buffers_[tid] = std::make_shared<EventBuffer> (buffer_size_);
+        thread_event_buffers_[tid] = std::make_shared<EventRingBuffer> (buffer_size_);
         perf_sampling_.set_event_buffer (thread_event_buffers_[tid]);
     }
 
@@ -65,13 +65,14 @@ access_sampling::start ()
 }
 
 void
-start_write_worker (const std::thread::id& tid, const EventBuffer& event_buffer, boost::filesystem::path trace_dir)
+start_write_worker (const std::thread::id& tid, const EventRingBuffer& event_buffer, boost::filesystem::path trace_dir)
 {
     std::stringstream ss;
     ss << "trace." << convert_thread_id (tid) << ".bin";
     trace_dir.append (ss.str ());
     TraceFile f (trace_dir, TraceFileMode::WRITE);
-    f.write (event_buffer);
+    TraceMetaData md(event_buffer, tid);
+    f.write (event_buffer, md);
 }
 
 void
