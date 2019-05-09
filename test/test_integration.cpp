@@ -102,7 +102,7 @@ TEST_CASE ("Integration")
         REQUIRE (bf::exists (trace));
         TraceFile tf (trace, TraceFileMode::READ);
 
-        auto access_sequence = tf.read<std::vector<AccessEvent>> ();
+        auto [access_sequence, md] = tf.read<std::vector<AccessEvent>> ();
         REQUIRE (access_sequence.size () > 0);
         for (auto& access : access_sequence)
         {
@@ -112,7 +112,7 @@ TEST_CASE ("Integration")
             REQUIRE (access.time < end_time);
         }
         REQUIRE (bf::remove (trace));
+        std::cout << "Recored memory accesses: " << md.size() << " on thread " << md.thread_id() << '\n';
     }
-
     std::cout << "Tested with " << nthreads << " threads.\n";
 }

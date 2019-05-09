@@ -57,8 +57,8 @@ TEST_CASE ("access_sampling::stop")
     TraceFile tf1 (t1, TraceFileMode::READ);
     TraceFile tf2 (t2, TraceFileMode::READ);
 
-    auto event_buffer1 = tf1.read<std::vector<AccessEvent>> ();
-    auto event_buffer2 = tf2.read<std::vector<AccessEvent>> ();
+    auto [event_buffer1, md1] = tf1.read<std::vector<AccessEvent>> ();
+    auto [event_buffer2, md2] = tf2.read<std::vector<AccessEvent>> ();
 
     REQUIRE (event_buffer1.size () == 2);
     REQUIRE (event_buffer2.size () == 2);
