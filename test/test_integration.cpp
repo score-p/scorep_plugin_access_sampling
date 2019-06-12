@@ -23,8 +23,11 @@ trace_path (ThreadId tid)
 static uint64_t
 timer ()
 {
-    return clock ();
+    unsigned a, d;    
+    asm volatile ( "rdtsc" : "=a" ( a ), "=d" ( d ) );    
+    return ( ( uint64_t )a ) | ( ( ( uint64_t )d ) << 32 ); 
 }
+
 class MetricConsumer
 {
     public:
@@ -73,7 +76,8 @@ access_sampling MetricConsumer::sampling_;
 TEST_CASE ("Integration")
 {
     std::vector<bf::path> traces;
-    unsigned int nthreads = std::thread::hardware_concurrency ();
+    //unsigned int nthreads = std::thread::hardware_concurrency ();
+    unsigned int nthreads = 4;
 
     const uint64_t start_time = timer ();
     {
