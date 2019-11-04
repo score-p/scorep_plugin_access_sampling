@@ -6,4 +6,4 @@
 	url = https://github.com/score-p/scorep_plugin_common
 [submodule "tracefile"]
 	path = tracefile
-	url = https://gitlab.hrz.tu-chemnitz.de/cherold--tu-dresden.de/tracefile.git
+	url = https://github.com/harryherold/TraceFile.git
