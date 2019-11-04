@@ -30,7 +30,7 @@ class PfmWrapper
 
     private:
     std::map<std::string, std::string> supported_events_ = {
-        { "load", "MEM_UOPS_RETIRED.ALL_LOADS" },
+        { "load" , "MEM_TRANS_RETIRED.LOAD_LATENCY" },
         { "store", "MEM_UOPS_RETIRED.ALL_STORES" }
     };
     static bool is_initialized_;
