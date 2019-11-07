@@ -6,4 +6,4 @@
 	url = https://github.com/score-p/scorep_plugin_common
 [submodule "tracefile"]
 	path = tracefile
-	url = https://github.com/harryherold/TraceFile.git
+	url = https://github.com/tud-zih-tools/MemAccessTrace.git
