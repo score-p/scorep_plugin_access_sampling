@@ -65,7 +65,9 @@ access_sampling::start ()
 }
 
 void
-start_write_worker (const std::thread::id& tid, const EventRingBuffer& event_buffer, boost::filesystem::path trace_dir)
+write_event_buffer (const std::thread::id& tid,
+                    const EventRingBuffer& event_buffer,
+                    boost::filesystem::path trace_dir)
 {
     std::stringstream ss;
     ss << "trace." << convert_thread_id (tid) << ".bin";
@@ -79,20 +81,7 @@ void
 access_sampling::stop ()
 {
     perf_sampling_.disable ();
-    std::vector<std::thread> workers;
-    auto trace_path = create_trace_directory ();
-
-    for (auto [tid, buffer] : thread_event_buffers_)
-    {
-        workers.push_back (std::thread (start_write_worker, tid, *buffer, trace_path));
-    }
-    for (auto& w : workers)
-    {
-        if (w.joinable ())
-        {
-            w.join ();
-        }
-    }
+    trace_dir_ = create_trace_directory ();
 }
 
 SCOREP_METRIC_PLUGIN_CLASS (access_sampling, "access_sampling")

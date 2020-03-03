@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/filesystem/path.hpp>
 #include <scorep/plugin/plugin.hpp>
 
 #include <iostream>
@@ -17,6 +18,11 @@ using ThreadId = std::thread::id;
 using TimeValuePair = std::pair<scorep::chrono::ticks, double>;
 using MetricProperty = scorep::plugin::metric_property;
 using ThreadEventPair = std::tuple<ThreadId, std::string>;
+
+void
+write_event_buffer (const std::thread::id& tid,
+                    const EventRingBuffer& event_buffer,
+                    boost::filesystem::path trace_dir);
 
 class access_sampling : public scorep::plugin::base<access_sampling, async, post_mortem, per_thread, scorep_clock>
 {
@@ -45,6 +51,7 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     std::mutex buffer_mutex_;
     std::map<ThreadId, EventBufferPtr> thread_event_buffers_;
     std::vector<ThreadEventPair> all_events_;
+    boost::filesystem::path trace_dir_;
 
     std::size_t buffer_size_ = 0;
 };
@@ -63,8 +70,8 @@ access_sampling::get_all_values (int32_t id, CursorType& cursor)
     }
 
     auto event_type = accessTypeFromString(metric);
-
-    for(auto & event: *thread_event_buffers_.at(tid))
+    auto event_buffer = thread_event_buffers_.at(tid);
+    for(auto & event: *event_buffer)
     {
         if(event_type == event.access_type)
         {
@@ -72,8 +79,10 @@ access_sampling::get_all_values (int32_t id, CursorType& cursor)
         }
     }
 
-    auto buffer_size = thread_event_buffers_.at(tid)->size();
-    if(thread_event_buffers_.at(tid)->access_count() > buffer_size)
+    write_event_buffer(tid, *event_buffer, trace_dir_);
+
+    auto buffer_size = event_buffer->size();
+    if(event_buffer->access_count() > buffer_size)
     {
         std::cerr << "Event buffer was too small and events are overwritten\n";
     }
