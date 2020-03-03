@@ -29,6 +29,8 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     public:
     access_sampling ();
 
+    ~access_sampling ();
+
     std::vector<MetricProperty>
     get_metric_properties (const std::string& metric_name);
 
@@ -51,8 +53,6 @@ class access_sampling : public scorep::plugin::base<access_sampling, async, post
     std::mutex buffer_mutex_;
     std::map<ThreadId, EventBufferPtr> thread_event_buffers_;
     std::vector<ThreadEventPair> all_events_;
-    boost::filesystem::path trace_dir_;
-
     std::size_t buffer_size_ = 0;
 };
 
@@ -78,8 +78,6 @@ access_sampling::get_all_values (int32_t id, CursorType& cursor)
             cursor.write(scorep::chrono::ticks(event.time), event.address);
         }
     }
-
-    write_event_buffer(tid, *event_buffer, trace_dir_);
 
     auto buffer_size = event_buffer->size();
     if(event_buffer->access_count() > buffer_size)

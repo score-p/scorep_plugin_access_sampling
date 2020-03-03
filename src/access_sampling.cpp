@@ -1,5 +1,6 @@
 #include <access_sampling.h>
 #include <boost/filesystem.hpp>
+#include <iostream>
 #include <sstream>
 #include <trace_file.h>
 #include <utils.h>
@@ -11,6 +12,27 @@ access_sampling::access_sampling ()
     buffer_size_ = read_buffer_size ();
     std::cout << "Esitmated memory consumption per thread "
               << to_mb (buffer_size_ * sizeof (AccessEvent)) << " MB\n";
+}
+
+access_sampling::~access_sampling()
+{
+    std::vector<std::thread> workers;
+    auto trace_dir = create_trace_directory ();
+
+    for (auto [tid, buffer] : thread_event_buffers_)
+    {
+        if(buffer)
+        {
+            workers.push_back (std::thread (write_event_buffer, tid, *buffer, trace_dir));
+        }
+    }
+    for (auto& w : workers)
+    {
+        if (w.joinable ())
+        {
+            w.join ();
+        }
+    }
 }
 
 std::vector<MetricProperty>
@@ -81,7 +103,6 @@ void
 access_sampling::stop ()
 {
     perf_sampling_.disable ();
-    trace_dir_ = create_trace_directory ();
 }
 
 SCOREP_METRIC_PLUGIN_CLASS (access_sampling, "access_sampling")
