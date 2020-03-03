@@ -44,8 +44,10 @@ PerfSampling::process_events (PerfRingBuffer* ring_buffer)
                                   access_event->ip,
                                   accessTypeFromPerf (access_event->data_src.mem_op),
                                   memoryLevelFromPerf (access_event->data_src.mem_lvl));
-
-                event_data_->append(event);
+                if(event_data_)
+                {
+                    event_data_->append(event);
+                }
                 continue;
             }
             break;
